@@ -1,50 +1,41 @@
-# React + TypeScript + Vite
+# PWA practice
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## OVERVIEW
 
-Currently, two official plugins are available:
+This document outlines the estimation plan for implementation of Progressive Web App project to build a mobile application. The practice focuses on understanding and applying the PWA for mobile development.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## OBJECTIVES
 
-## Expanding the ESLint configuration
+- Gain an understanding of core concepts of PWAs and aim to deliver an app-like experience.
+- Understand the role of Service Worker
+- Understand and Utilize the Web App manifest
+- Implement Offline Capabilities
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+## TECHNICAL STACKS
 
-- Configure the top-level `parserOptions` property like this:
+- React: React lets you build user interfaces out of individual pieces called components. Create your own React components like Thumbnail, LikeButton, and Video.
+- Vite PWA: PWA integrations for Vite and the ecosystem
+- Tailwind CSS: Rapidly build modern websites without ever leaving your HTML
+- TanStack Query(React Query): TanStack Query is configurable down to each observer instance of a query with knobs and options to fit every use-case.
+- Open-Meteo Weather API: Open-Meteo is an open-source weather API and offers free access for non-commercial use. No API key required.
 
-```js
-export default tseslint.config({
-  languageOptions: {
-    // other options...
-    parserOptions: {
-      project: ['./tsconfig.node.json', './tsconfig.app.json'],
-      tsconfigRootDir: import.meta.dirname,
-    },
-  },
-})
-```
+## APPROACHES
 
-- Replace `tseslint.configs.recommended` to `tseslint.configs.recommendedTypeChecked` or `tseslint.configs.strictTypeChecked`
-- Optionally add `...tseslint.configs.stylisticTypeChecked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and update the config:
+- Have app icon & splash screen
+- App still work even app is offline
+  - Leverage IndexedDB API to store the current weather forecast data to show
+- Show an alert to let user know the current network status
+- Auto detect the user’s location
+  - Leverage Permission API to request user permission to get the user’s location data
+- The user can search location
+  - Allow the user to search specific location
+- Let user the future attention weather forecast by push notification
+  - Leverage Push Notification API to create a push notification to user know the future weather forecast
 
-```js
-// eslint.config.js
-import react from 'eslint-plugin-react'
+## DESIGN
 
-export default tseslint.config({
-  // Set the react version
-  settings: { react: { version: '18.3' } },
-  plugins: {
-    // Add the react plugin
-    react,
-  },
-  rules: {
-    // other rules...
-    // Enable its recommended rules
-    ...react.configs.recommended.rules,
-    ...react.configs['jsx-runtime'].rules,
-  },
-})
-```
+[Figma](https://www.figma.com/design/Ako0rWzBakKJgzhHv3oPmW/Mono-Weather-UI?node-id=19-2&t=3TQb0PNtktLOKKSl-1)
+
+## STRUCTURE
+
+(Update during developing)
