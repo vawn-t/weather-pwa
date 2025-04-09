@@ -104,7 +104,64 @@ export default defineConfig({
 			workbox: {
 				globPatterns: ['**/*.{js,css,html,svg,png,ico}'],
 				cleanupOutdatedCaches: true,
-				clientsClaim: true
+				clientsClaim: true,
+				skipWaiting: true,
+
+				// Custom runtime caching strategies
+				runtimeCaching: [
+					{
+						// Cache weather API responses (adjust the pattern to match your actual API)
+						urlPattern:
+							/^(https:\/\/api\.open-meteo\.com\/v1\/forecast|http:\/\/api\.openweathermap\.org\/geo\/1\.0\/direct)$/i,
+						handler: 'StaleWhileRevalidate',
+						options: {
+							cacheName: 'weather-api-cache',
+							expiration: {
+								maxEntries: 50,
+								maxAgeSeconds: 86400 // 24 hours (1 day) stale cache
+							},
+							cacheableResponse: {
+								statuses: [0, 200]
+							},
+							backgroundSync: {
+								name: 'weather-api-queue',
+								options: {
+									maxRetentionTime: 24 * 60 // Retry for up to 24 hours (in minutes)
+								}
+							}
+						}
+					}
+					// Finding What data to cache here
+					// {
+					// 	// Cache app data (modify this pattern as needed)
+					// 	urlPattern: /^https?:\/\/.*\/api\/.*$/i,
+					// 	handler: 'NetworkFirst',
+					// 	options: {
+					// 		cacheName: 'app-data-cache',
+					// 		expiration: {
+					// 			maxEntries: 100,
+					// 			maxAgeSeconds: 86400 // 24 hours
+					// 		},
+					// 		networkTimeoutSeconds: 3, // Fall back to cache if network takes more than 3 seconds
+					// 		cacheableResponse: {
+					// 			statuses: [0, 200]
+					// 		}
+					// 	}
+					// },
+					// Considering caching static assets for both local and external static assets
+					// {
+					// 	// Cache static assets with a Cache First strategy
+					// 	urlPattern: /\.(?:png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot|ico)$/i,
+					// 	handler: 'CacheFirst',
+					// 	options: {
+					// 		cacheName: 'static-assets',
+					// 		expiration: {
+					// 			maxEntries: 100,
+					// 			maxAgeSeconds: 604800 // 7 days
+					// 		}
+					// 	}
+					// }
+				]
 			},
 
 			devOptions: {
