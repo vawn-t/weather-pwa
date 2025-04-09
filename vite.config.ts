@@ -1,3 +1,4 @@
+import path from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
@@ -171,5 +172,12 @@ export default defineConfig({
 				type: 'module'
 			}
 		})
-	]
+	],
+	resolve: {
+		alias: {
+			'@pages': path.resolve(__dirname, './src/pages'),
+			'@components': path.resolve(__dirname, './src/components'),
+			'@assets': path.resolve(__dirname, './src/assets')
+		}
+	}
 });
