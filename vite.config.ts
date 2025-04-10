@@ -177,6 +177,9 @@ export default defineConfig({
     alias: {
       '@screens': path.resolve(__dirname, './src/screens'),
       '@components': path.resolve(__dirname, './src/components'),
+      '@layouts': path.resolve(__dirname, './src/layouts'),
+      '@utils': path.resolve(__dirname, './src/utils'),
+      '@hooks': path.resolve(__dirname, './src/hooks'),
       '@assets': path.resolve(__dirname, './src/assets'),
     },
   },
