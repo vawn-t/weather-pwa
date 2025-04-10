@@ -1,18 +1,18 @@
-import { useBackgroundImage } from '@hooks';
 import { ReactNode } from 'react';
+import classNames from 'classnames';
 
-interface MobileLayoutProps {
+interface MobileLayoutProps extends React.HTMLProps<HTMLElement> {
   children: ReactNode;
 }
 
-const MobileLayout = ({ children }: MobileLayoutProps) => {
-  const location = 'Tokyo';
-  const imgURL = useBackgroundImage(location);
-
+const MobileLayout = ({ children, className, ...rest }: MobileLayoutProps) => {
   return (
     <main
-      style={{ '--image-url': `url(${imgURL})` } as React.CSSProperties}
-      className="py-8h px-6 bg-[image:var(--image-url)] relative flex flex-col  h-screen w-screen bg-cover bg-center"
+      className={classNames(
+        'py-8h px-6 relative flex flex-col  h-screen w-screen bg-cover bg-center',
+        className
+      )}
+      {...rest}
     >
       {children}
     </main>

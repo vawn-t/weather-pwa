@@ -13,8 +13,8 @@ const Button = ({
 }: ButtonProps) => {
   const baseStyles = 'px-4 py-2 font-semibold rounded';
   const variantStyles = {
-    primary: 'bg-blue-500 text-white rounded-3xl',
-    secondary: 'bg-gray-5v00 text-[#ECECEC]',
+    primary: 'text-white rounded-3xl',
+    secondary: 'text-[#ECECEC]',
     icon: '',
   };
 
