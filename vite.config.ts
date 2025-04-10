@@ -175,7 +175,7 @@ export default defineConfig({
 	],
 	resolve: {
 		alias: {
-			'@pages': path.resolve(__dirname, './src/pages'),
+			'@screens': path.resolve(__dirname, './src/screens'),
 			'@components': path.resolve(__dirname, './src/components'),
 			'@assets': path.resolve(__dirname, './src/assets')
 		}

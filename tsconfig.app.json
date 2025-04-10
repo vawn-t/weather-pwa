@@ -24,7 +24,7 @@
 
     "baseUrl": ".",
     "paths": {
-      "@pages": ["src/pages/index.ts"],
+      "@screens": ["src/screens/index.ts"],
       "@components": ["src/components/index.ts"],
       "@assets/*": ["src/assets/*"],
     }
