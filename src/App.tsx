@@ -2,13 +2,13 @@ import { Route, Routes } from 'react-router';
 import { HomeScreen, MyLocationsScreen, SearchScreen } from './screens';
 
 function App() {
-	return (
-		<Routes>
-			<Route path='/' element={<HomeScreen />} />
-			<Route path='/my-locations' element={<MyLocationsScreen />} />
-			<Route path='/search' element={<SearchScreen />} />
-		</Routes>
-	);
+  return (
+    <Routes>
+      <Route path="/" element={<HomeScreen />} />
+      <Route path="/my-locations" element={<MyLocationsScreen />} />
+      <Route path="/search" element={<SearchScreen />} />
+    </Routes>
+  );
 }
 
 export default App;
