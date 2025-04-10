@@ -24,8 +24,12 @@
 
     "baseUrl": ".",
     "paths": {
-      "@pages": ["src/pages/index.ts"],
+      "@screens": ["src/screens/index.ts"],
       "@components": ["src/components/index.ts"],
+      "@layouts": ["src/layouts/index.ts"],
+      "@utils": ["src/utils/index.ts"],
+      "@hooks": ["src/hooks/index.ts"],
+      "@models": ["src/models/index.ts"],
       "@assets/*": ["src/assets/*"],
     }
   },
