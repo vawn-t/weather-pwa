@@ -1,17 +1,20 @@
-import { NavLink } from 'react-router';
 import { SearchIcon } from '../icons';
-import { Text } from '../commons';
+import { Button, Text } from '../commons';
 
-const MyLocationsHeader = () => {
+interface MyLocationsHeaderProps {
+  onOpenModal: () => void;
+}
+
+const MyLocationsHeader = ({ onOpenModal }: MyLocationsHeaderProps) => {
   return (
     <div className="relative z-10 flex justify-between items-center p-4">
       <Text as="h2" className="text-lg font-semibold">
         Saved Locations
       </Text>
 
-      <NavLink to="/my-locations" end>
+      <Button onClick={onOpenModal}>
         <SearchIcon />
-      </NavLink>
+      </Button>
     </div>
   );
 };

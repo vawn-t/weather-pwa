@@ -1,24 +1,13 @@
 import { ButtonHTMLAttributes } from 'react';
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'icon';
   disabled?: boolean;
 }
 
-const Button = ({
-  disabled = false,
-  variant = 'primary',
-  className,
-  ...rest
-}: ButtonProps) => {
-  const baseStyles = 'px-4 py-2 font-semibold rounded';
-  const variantStyles = {
-    primary: 'text-white rounded-3xl',
-    secondary: 'text-[#ECECEC]',
-    icon: '',
-  };
+const Button = ({ disabled = false, className, ...rest }: ButtonProps) => {
+  const baseStyles = 'font-semibold rounded cursor-pointer';
 
-  const styles = `${baseStyles} ${variantStyles[variant]} ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`;
+  const styles = `${baseStyles}  ${disabled ? 'opacity-50 cursor-not-allowed' : ''} ${className}`;
 
   return <button className={styles} disabled={disabled} {...rest} />;
 };

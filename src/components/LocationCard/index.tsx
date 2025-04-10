@@ -4,8 +4,8 @@ import { Text } from '../commons';
 interface LocationCardProps {
   city: string;
   condition: string;
-  humidity: string;
-  wind: string;
+  humidity: number;
+  wind: number;
   icon: string;
   temperature: number;
 }
@@ -21,7 +21,7 @@ const LocationCard = ({
   const weatherIcon = useWeatherIcon(icon);
 
   return (
-    <section className="bg-[#AAA5A5]/30 backdrop-blur-sm rounded-xl p-4 flex justify-between items-center mb-4 mx-4">
+    <section className="bg-[#AAA5A5]/30 backdrop-blur-sm rounded-xl p-4 flex justify-between items-center mb-6 mx-4">
       {/* Left Side Info */}
       <div className="flex flex-col text-gray-200">
         <Text className="text-2xl font-semibold mb-1">{city}</Text>

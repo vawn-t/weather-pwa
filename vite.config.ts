@@ -180,6 +180,7 @@ export default defineConfig({
       '@layouts': path.resolve(__dirname, './src/layouts'),
       '@utils': path.resolve(__dirname, './src/utils'),
       '@hooks': path.resolve(__dirname, './src/hooks'),
+      '@models': path.resolve(__dirname, './src/models'),
       '@assets': path.resolve(__dirname, './src/assets'),
     },
   },
