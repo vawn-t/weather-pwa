@@ -13,8 +13,8 @@ export const useBackgroundImage = (location: string) => {
           orientation: 'portrait', // Good for mobile
         });
 
-        if (result.response?.results.length > 0) {
-          const imageUrl = result.response.results[0].urls.regular;
+        if (result.response!.results.length > 0) {
+          const imageUrl = result.response!.results[0].urls.regular;
           setBackgroundImage(imageUrl);
         } else {
           // Fallback image if no results

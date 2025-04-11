@@ -12,26 +12,26 @@ const MyLocations = () => {
     {
       city: 'Paris',
       condition: 'Clear',
-      humidity: 56,
-      wind: 4.63,
+      humidity: '56',
+      wind: '4.63',
       icon: '01n',
-      temperature: 24,
+      temperature: '24',
     },
     {
       city: 'London',
       condition: 'Clouds',
-      humidity: 65,
-      wind: 4.12,
+      humidity: '65',
+      wind: '4.12',
       icon: '02d',
-      temperature: 16,
+      temperature: '16',
     },
     {
       city: 'New York',
       condition: 'Thunderstorm',
-      humidity: 34,
-      wind: 9.26,
+      humidity: '34',
+      wind: '9.26',
       icon: '09d',
-      temperature: 25,
+      temperature: '25',
     },
   ]);
 
@@ -52,13 +52,12 @@ const MyLocations = () => {
       // Example: Fetch weather data from an API using selectedCity.name
       // For now, we'll just add it with dummy data if it's not already added
       const alreadyExists = locations.some(
-        (loc) => loc.city.toLowerCase() === selectedCity.city.toLowerCase()
+        (loc) => loc.city.toLowerCase() === selectedCity.name.toLowerCase()
       );
 
       if (!alreadyExists) {
-        const newLocation = {
-          id: Date.now(), // Use a better ID generation in a real app
-          city: selectedCity.city,
+        const newLocation: Weather = {
+          city: selectedCity.name,
           condition: 'Fetching...', // Placeholder until data is loaded
           humidity: '--%',
           wind: '--km/h',

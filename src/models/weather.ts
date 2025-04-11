@@ -1,8 +1,8 @@
 export interface Weather {
   city: string;
   condition: string;
-  humidity: number;
-  wind: number;
+  humidity: string;
+  wind: string;
   icon: string;
-  temperature: number;
+  temperature: string;
 }

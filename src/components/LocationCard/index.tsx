@@ -4,10 +4,10 @@ import { Text } from '../commons';
 interface LocationCardProps {
   city: string;
   condition: string;
-  humidity: number;
-  wind: number;
+  humidity: string;
+  wind: string;
   icon: string;
-  temperature: number;
+  temperature: string;
 }
 
 const LocationCard = ({
