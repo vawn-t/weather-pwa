@@ -1,4 +1,4 @@
-import HumidityIcon from '@assets/weather-icons/Humidity.png';
+import HumidityIcon from '@assets/weather-icons/humidity.png';
 
 const Humidity = () => <img src={HumidityIcon} alt="Humidity" />;
 
