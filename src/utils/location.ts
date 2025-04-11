@@ -30,6 +30,8 @@ export const getCurrentPosition = (
       return;
     }
 
+    console.log('!navigator.geolocation', !navigator.geolocation);
+
     navigator.geolocation.getCurrentPosition(resolve, reject, options);
   });
 };

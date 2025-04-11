@@ -1,6 +1,7 @@
+import { useState, useEffect, useCallback } from 'react';
+
 import { LocationState, PermissionStatus } from '@models';
 import { checkPermissionStatus, getCurrentPosition } from '@utils';
-import { useState, useEffect, useCallback } from 'react';
 
 interface UseLocationResult {
   location: LocationState | null;
@@ -37,6 +38,7 @@ export const useLocation = (
     try {
       // This will trigger the permission prompt if needed
       const position = await getCurrentPosition(options);
+      console.log('position', position);
 
       setLocation({
         latitude: position.coords.latitude,
@@ -49,6 +51,8 @@ export const useLocation = (
       const status = await checkPermissionStatus();
       setPermissionStatus(status);
     } catch (err) {
+      console.log('Error getting location:', err);
+
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -72,7 +76,7 @@ export const useLocation = (
       setPermissionStatus(status);
 
       // If auto-request is enabled and permission is not denied, request location
-      if (autoRequest && status !== 'denied') {
+      if (autoRequest && status !== 'granted') {
         requestPermission();
       }
     };

@@ -1,9 +1,14 @@
 import { Route, Routes } from 'react-router';
 import { HomeScreen, MyLocationsScreen } from './screens';
 import { useLocation } from '@hooks';
+import { useEffect } from 'react';
 
 function App() {
-  useLocation();
+  const { requestPermission } = useLocation();
+
+  useEffect(() => {
+    requestPermission();
+  }, []);
 
   return (
     <Routes>
