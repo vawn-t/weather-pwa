@@ -1,39 +1,43 @@
-import { LocationCard, MyLocationsHeader, SearchModal } from '@components';
+import { useCallback, useState, useEffect } from 'react';
+
+import {
+  LocationCard,
+  MyLocationsHeader,
+  SearchModal,
+  Text,
+} from '@components';
 import { MobileLayout } from '@layouts';
-import { Location, Weather } from '@models';
-import { useCallback, useState } from 'react';
+import { OpenWeatherMap, OpenWeatherMapLocation } from '@models';
+import { useWeather } from '@hooks';
+import { indexedDBService } from '@services';
 
 const MyLocations = () => {
-  // State for modal visibility
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [locations, setLocations] = useState<OpenWeatherMap[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // State for saved locations (example)
-  const [locations, setLocations] = useState<Weather[]>([
-    {
-      city: 'Paris',
-      condition: 'Clear',
-      humidity: '56',
-      wind: '4.63',
-      icon: '01n',
-      temperature: '24',
-    },
-    {
-      city: 'London',
-      condition: 'Clouds',
-      humidity: '65',
-      wind: '4.12',
-      icon: '02d',
-      temperature: '16',
-    },
-    {
-      city: 'New York',
-      condition: 'Thunderstorm',
-      humidity: '34',
-      wind: '9.26',
-      icon: '09d',
-      temperature: '25',
-    },
-  ]);
+  const { asyncFetchWeather } = useWeather();
+
+  // Load saved locations from IndexedDB on component mount
+  useEffect(() => {
+    const loadSavedLocations = async () => {
+      try {
+        setIsLoading(true);
+        const savedLocations = await indexedDBService.getLocations();
+        if (savedLocations && savedLocations.length > 0) {
+          // Extract the weather data from each record
+          const weatherData = savedLocations.map((loc) => loc.data);
+          setLocations(weatherData);
+        }
+      } catch (error) {
+        console.error('Failed to load saved locations:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    loadSavedLocations();
+  }, []);
 
   const openModal = useCallback(() => {
     setIsModalOpen(true);
@@ -43,55 +47,87 @@ const MyLocations = () => {
     setIsModalOpen(false);
   }, []);
 
-  // Function to add a new location (passed to the modal)
-  // This is a placeholder - you'll need to fetch actual weather data here
   const handleAddLocation = useCallback(
-    (selectedCity: Location) => {
-      console.log('Adding location:', selectedCity);
-      // --- Placeholder: Fetch real data for selectedCity ---
-      // Example: Fetch weather data from an API using selectedCity.name
-      // For now, we'll just add it with dummy data if it's not already added
+    async (selectedCity: OpenWeatherMapLocation) => {
       const alreadyExists = locations.some(
-        (loc) => loc.city.toLowerCase() === selectedCity.name.toLowerCase()
+        (loc) => loc.name.toLowerCase() === selectedCity.name.toLowerCase()
       );
 
       if (!alreadyExists) {
-        const newLocation: Weather = {
-          city: selectedCity.name,
-          condition: 'Fetching...', // Placeholder until data is loaded
-          humidity: '--%',
-          wind: '--km/h',
-          icon: '⏳',
-          temperature: '--',
-        };
-        setLocations((prevLocations) => [...prevLocations, newLocation]);
-        // TODO: Trigger actual data fetch for this newLocation here
+        try {
+          const location = await asyncFetchWeather({
+            latitude: selectedCity.lat,
+            longitude: selectedCity.lon,
+            accuracy: 0,
+            timestamp: Date.now(),
+          });
+
+          if (location) {
+            const newLocation: OpenWeatherMap = {
+              ...location,
+              name: selectedCity.name,
+            };
+
+            setLocations((prevLocations) => [...prevLocations, newLocation]);
+
+            await indexedDBService.addLocation(newLocation);
+          }
+        } catch (error) {
+          console.error('Failed to fetch weather data:', error);
+        }
       } else {
+        // TODO: Show a message to the user
         console.log(`${selectedCity.name} already exists.`);
-        // Optional: Show a message to the user
       }
 
-      closeModal(); // Close the modal after selection
+      closeModal();
     },
-    [locations, closeModal]
-  ); // Include dependencies
+    [locations, closeModal, asyncFetchWeather]
+  );
+
+  // Handler for deleting a location
+  const handleDeleteLocation = useCallback(async (id: number) => {
+    try {
+      // Delete from IndexedDB first
+      await indexedDBService.deleteLocation(id);
+
+      // Then update the UI by removing the location from state
+      setLocations((prevLocations) =>
+        prevLocations.filter((location) => location.id !== id)
+      );
+    } catch (error) {
+      console.error('Failed to delete location:', error);
+    }
+  }, []);
 
   return (
     <MobileLayout className="bg-gradient-to-b from-[#391A49] via-[#301D5C] via-[#262171] via-[#301D5C] to-[#391A49] gap-6">
       <MyLocationsHeader onOpenModal={openModal} />
 
       <div className="flex-grow overflow-y-auto">
-        {locations.map((loc) => (
-          <LocationCard
-            key={loc.city}
-            city={loc.city}
-            condition={loc.condition}
-            humidity={loc.humidity}
-            wind={loc.wind}
-            icon={loc.icon}
-            temperature={loc.temperature}
-          />
-        ))}
+        {isLoading ? (
+          <Text className="text-white text-center py-8">
+            Loading saved locations...
+          </Text>
+        ) : locations.length > 0 ? (
+          locations.map((loc) => (
+            <LocationCard
+              id={loc.id}
+              key={loc.id}
+              city={loc.name}
+              condition={loc.weather[0].main}
+              humidity={loc.main.humidity}
+              wind={loc.wind.speed}
+              icon={loc.weather[0].icon}
+              temperature={loc.main.temp}
+              onDelete={handleDeleteLocation}
+            />
+          ))
+        ) : (
+          <Text className="text-white text-center py-8">
+            No saved locations. Add a location to get started.
+          </Text>
+        )}
       </div>
 
       <SearchModal

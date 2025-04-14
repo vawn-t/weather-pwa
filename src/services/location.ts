@@ -9,10 +9,10 @@ import { OpenWeatherMapLocation } from '@models';
  */
 export const searchLocation = async (
   query: string,
-  count: number = 5
+  limit: number = 5
 ): Promise<OpenWeatherMapLocation[]> => {
   try {
-    const response = await fetch(API_ROUTES.LOCATION_BY_TEXT(count, query));
+    const response = await fetch(API_ROUTES.LOCATION_BY_TEXT(limit, query));
 
     if (!response.ok) {
       throw new Error(`Error searching location: ${response.status}`);

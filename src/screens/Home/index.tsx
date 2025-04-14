@@ -1,12 +1,16 @@
 import { CurrentWeather, ForecastSection, HomeHeader } from '@components';
 import { MobileLayout } from '@layouts';
-import { useBackgroundImage, useWeather } from '@hooks';
+import { useBackgroundImage, useLocation, useWeather } from '@hooks';
 
 const Home = () => {
-  const location = 'Tokyo';
-  const imgURL = useBackgroundImage(location);
+  const locationTest = 'Tokyo';
+  const imgURL = useBackgroundImage(locationTest);
 
-  const { locationData, forecast, currentWeather, lastUpdated } = useWeather();
+  const { location } = useLocation();
+
+  // TODO: Handle navigate screen required location permission if not granted
+
+  const { locationData, forecast, weather, lastUpdated } = useWeather(location);
 
   return (
     <MobileLayout
@@ -15,7 +19,7 @@ const Home = () => {
     >
       <HomeHeader location={locationData} />
 
-      <CurrentWeather data={currentWeather} lastUpdated={lastUpdated} />
+      <CurrentWeather data={weather} lastUpdated={lastUpdated} />
 
       <ForecastSection data={forecast} />
     </MobileLayout>

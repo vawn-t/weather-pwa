@@ -36,7 +36,6 @@ export interface Weather {
   wind: string;
 }
 
-// OpenWeatherMap API response types
 export interface OpenWeatherMap {
   coord: {
     lon: number;
@@ -114,3 +113,9 @@ export interface DailyForecast {
   temp: string;
   wind: string;
 }
+
+export type WeatherPayload = {
+  lat: number;
+  lon: number;
+  units: 'standard' | 'metric' | 'imperial';
+};

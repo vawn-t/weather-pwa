@@ -5,3 +5,4 @@ export { default as MenuIcon } from './Menu';
 export { default as WindIcon } from './Wind';
 export { default as PlusIcon } from './Plus';
 export { default as SearchIcon } from './Search';
+export { default as BackIcon } from './Back';

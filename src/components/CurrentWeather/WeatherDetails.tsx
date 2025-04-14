@@ -10,7 +10,7 @@ const WeatherDetails = ({ data }: WeatherDetailProps) => {
     <div className="flex justify-between items-center p-4 gap-[75px]">
       {data.map((item, index) => (
         <WeatherDetailItem
-          key={index}
+          key={item.label + index}
           icon={item.icon}
           label={item.label}
           value={item.value}

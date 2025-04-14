@@ -4,34 +4,36 @@ import {
   getForecastByCoordinates,
   getOpenWeatherMapByCoordinates,
 } from '@services';
-import { useLocation } from './useLocation';
-import { DailyForecast, OpenWeatherMap } from '@models';
+import { DailyForecast, LocationState, OpenWeatherMap } from '@models';
 import { getNext5DaysForecast } from '@utils';
 import { WEATHER_DATA_DEFAULT } from '@constants';
 
 interface UseWeatherResult {
-  currentWeather: OpenWeatherMap;
+  weather: OpenWeatherMap;
   forecast: DailyForecast[];
   lastUpdated: string;
   locationData: string;
   loading: boolean;
   error: string | null;
+  asyncFetchWeather: (
+    location: LocationState
+  ) => Promise<OpenWeatherMap | undefined>;
 }
 
 /**
  * Hook to fetch and manage weather data
  * @param autoFetch - Whether to automatically fetch weather for current location
  */
-export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
-  const [currentWeather, setCurrentWeather] =
-    useState<OpenWeatherMap>(WEATHER_DATA_DEFAULT);
+export const useWeather = (
+  location?: LocationState,
+  autoFetch: boolean = true
+): UseWeatherResult => {
+  const [weather, setWeather] = useState<OpenWeatherMap>(WEATHER_DATA_DEFAULT);
   const [forecast, setForecast] = useState<DailyForecast[]>([]);
   const [locationData, setLocationData] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
-
-  const { location, error: locationError } = useLocation(undefined, autoFetch);
 
   useEffect(() => {
     if (location && autoFetch) {
@@ -39,13 +41,6 @@ export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
       fetchForecast();
     }
   }, [location]);
-
-  // Handle location error
-  useEffect(() => {
-    if (locationError) {
-      setError(locationError);
-    }
-  }, [locationError]);
 
   const fetchWeatherForCurrentLocation = useCallback(async () => {
     if (!location) return;
@@ -67,7 +62,7 @@ export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
         position.coords.latitude,
         position.coords.longitude
       );
-      setCurrentWeather(data);
+      setWeather(data);
 
       const locationResult = await getOpenWeatherMapByCoordinates(
         location.latitude,
@@ -110,12 +105,36 @@ export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
     }
   }, [location]);
 
+  const asyncFetchWeather = useCallback(async (location: LocationState) => {
+    if (!location) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getOpenWeatherMapByCoordinates(
+        location.latitude,
+        location.longitude
+      );
+
+      return data;
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred while fetching weather data.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
   return {
-    currentWeather,
+    weather,
     locationData,
     loading,
     error,
     lastUpdated,
     forecast,
+    asyncFetchWeather,
   };
 };
