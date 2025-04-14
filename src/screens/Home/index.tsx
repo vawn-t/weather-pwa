@@ -6,21 +6,18 @@ const Home = () => {
   const location = 'Tokyo';
   const imgURL = useBackgroundImage(location);
 
-  const { loading, locationData } = useWeather();
-
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+  const { locationData, forecast, currentWeather, lastUpdated } = useWeather();
 
   return (
     <MobileLayout
       style={{ '--image-url': `url(${imgURL})` } as React.CSSProperties}
-      className="bg-[image:var(--image-url)] "
+      className="bg-[image:var(--image-url)]"
     >
-      <HomeHeader location={locationData.name} />
+      <HomeHeader location={locationData} />
 
-      <CurrentWeather />
-      <ForecastSection />
+      <CurrentWeather data={currentWeather} lastUpdated={lastUpdated} />
+
+      <ForecastSection data={forecast} />
     </MobileLayout>
   );
 };

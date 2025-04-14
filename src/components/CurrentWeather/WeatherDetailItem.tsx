@@ -12,7 +12,7 @@ const WeatherDetailItem = ({ icon, label, value }: WeatherDetailItemProps) => {
   return (
     <div className="flex flex-col items-center">
       <span className="text-2xl mb-1">{icon}</span>
-      <Text className="text-sm font-medium">{label}</Text>
+      <Text className="text-sm font-medium whitespace-nowrap">{label}</Text>
       <Text className="text-sm font-medium">{value}</Text>
     </div>
   );

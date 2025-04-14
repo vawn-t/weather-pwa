@@ -7,9 +7,6 @@ import tailwindcss from '@tailwindcss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  server: {
-    host: true,
-  },
   plugins: [
     react(),
     basicSsl(),
@@ -191,6 +188,7 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './src/hooks'),
       '@models': path.resolve(__dirname, './src/models'),
       '@services': path.resolve(__dirname, './src/services'),
+      '@constants': path.resolve(__dirname, './src/constants'),
       '@assets': path.resolve(__dirname, './src/assets'),
     },
   },

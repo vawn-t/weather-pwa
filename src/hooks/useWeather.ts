@@ -1,73 +1,42 @@
 import { useState, useEffect, useCallback } from 'react';
+
 import {
-  getCurrentLocationWeather,
-  getLocationByCoordinates,
-  getWeatherByLocationName,
+  getForecastByCoordinates,
+  getOpenWeatherMapByCoordinates,
 } from '@services';
-import { WeatherData } from '../models/weather';
 import { useLocation } from './useLocation';
-import { OpenWeatherMapLocation } from '@models';
+import { DailyForecast, OpenWeatherMap } from '@models';
+import { getNext5DaysForecast } from '@utils';
+import { WEATHER_DATA_DEFAULT } from '@constants';
 
 interface UseWeatherResult {
-  weatherData: WeatherData;
-  locationData: OpenWeatherMapLocation;
+  currentWeather: OpenWeatherMap;
+  forecast: DailyForecast[];
+  lastUpdated: string;
+  locationData: string;
   loading: boolean;
   error: string | null;
-  searchWeatherByLocation: (query: string) => Promise<void>;
 }
-
-const LOCATION_DATA_DEFAULT: OpenWeatherMapLocation = {
-  name: '',
-  lat: 0,
-  lon: 0,
-  country: '',
-  state: '',
-};
-
-const WEATHER_DATA_DEFAULT: WeatherData = {
-  latitude: 0,
-  longitude: 0,
-  generationtime_ms: 0,
-  utc_offset_seconds: 0,
-  timezone: '',
-  timezone_abbreviation: '',
-  elevation: 0,
-  current_weather: {
-    temperature: 0,
-    windspeed: 0,
-    winddirection: 0,
-    weathercode: 0,
-    time: '',
-  },
-  daily: {
-    time: [],
-    weathercode: [],
-    temperature_2m_max: [],
-    temperature_2m_min: [],
-    sunrise: [],
-    sunset: [],
-  },
-};
 
 /**
  * Hook to fetch and manage weather data
  * @param autoFetch - Whether to automatically fetch weather for current location
  */
 export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
-  const [weatherData, setWeatherData] =
-    useState<WeatherData>(WEATHER_DATA_DEFAULT);
-  const [locationData, setLocationData] = useState<OpenWeatherMapLocation>(
-    LOCATION_DATA_DEFAULT
-  );
+  const [currentWeather, setCurrentWeather] =
+    useState<OpenWeatherMap>(WEATHER_DATA_DEFAULT);
+  const [forecast, setForecast] = useState<DailyForecast[]>([]);
+  const [locationData, setLocationData] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
 
   const { location, error: locationError } = useLocation(undefined, autoFetch);
 
-  // Fetch weather data for current location when available
   useEffect(() => {
     if (location && autoFetch) {
       fetchWeatherForCurrentLocation();
+      fetchForecast();
     }
   }, [location]);
 
@@ -94,15 +63,20 @@ export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
         timestamp: location.timestamp,
       } as GeolocationPosition;
 
-      const data = await getCurrentLocationWeather(position);
-      setWeatherData(data);
+      const data = await getOpenWeatherMapByCoordinates(
+        position.coords.latitude,
+        position.coords.longitude
+      );
+      setCurrentWeather(data);
 
-      const locationResult = await getLocationByCoordinates(
+      const locationResult = await getOpenWeatherMapByCoordinates(
         location.latitude,
         location.longitude
       );
 
-      setLocationData(locationResult);
+      setLocationData(locationResult.name);
+
+      setLastUpdated(new Date().toLocaleString('en-US', { timeZone: 'UTC' }));
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -114,34 +88,34 @@ export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
     }
   }, [location]);
 
-  const searchWeatherByLocation = async (query: string) => {
+  const fetchForecast = useCallback(async () => {
+    if (!location) return;
     setLoading(true);
     setError(null);
-
     try {
-      const result = await getWeatherByLocationName(query);
+      const result = await getForecastByCoordinates(
+        location.latitude,
+        location.longitude
+      );
 
-      if (result) {
-        setWeatherData(result.weather);
-      } else {
-        setError('No matching location found.');
-      }
+      setForecast(getNext5DaysForecast(result));
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unknown error occurred while searching for weather data.');
+        setError('An unknown error occurred while fetching forecast data.');
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [location]);
 
   return {
-    weatherData,
+    currentWeather,
     locationData,
     loading,
     error,
-    searchWeatherByLocation,
+    lastUpdated,
+    forecast,
   };
 };

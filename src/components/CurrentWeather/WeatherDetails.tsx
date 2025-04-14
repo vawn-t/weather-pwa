@@ -1,16 +1,21 @@
-import { HumidityIcon, WindIcon, FeelsLikeIcon } from '../icons';
+import { WeatherDetail } from '.';
 import WeatherDetailItem from './WeatherDetailItem';
 
-const WeatherDetails = () => {
+interface WeatherDetailProps {
+  data: WeatherDetail[];
+}
+
+const WeatherDetails = ({ data }: WeatherDetailProps) => {
   return (
     <div className="flex justify-between items-center p-4 gap-[75px]">
-      <WeatherDetailItem icon={<HumidityIcon />} label="HUMIDITY" value="56%" />
-      <WeatherDetailItem icon={<WindIcon />} label="WIND" value="4.63km/h" />
-      <WeatherDetailItem
-        icon={<FeelsLikeIcon />}
-        label="FEELS LIKE"
-        value="22°"
-      />
+      {data.map((item, index) => (
+        <WeatherDetailItem
+          key={index}
+          icon={item.icon}
+          label={item.label}
+          value={item.value}
+        />
+      ))}
     </div>
   );
 };

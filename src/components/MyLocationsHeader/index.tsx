@@ -7,7 +7,7 @@ interface MyLocationsHeaderProps {
 
 const MyLocationsHeader = ({ onOpenModal }: MyLocationsHeaderProps) => {
   return (
-    <div className="relative z-10 flex justify-between items-center p-4">
+    <div className="relative z-10 flex justify-between items-center pt-4">
       <Text as="h2" className="text-lg font-semibold">
         Saved Locations
       </Text>
