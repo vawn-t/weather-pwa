@@ -9,6 +9,7 @@ export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+
     VitePWA({
       registerType: 'autoUpdate',
       injectRegister: false,
@@ -17,6 +18,8 @@ export default defineConfig({
         disabled: false,
         config: true,
       },
+
+      includeAssets: ['**/*'],
 
       manifest: {
         name: 'Weather',
@@ -173,6 +176,7 @@ export default defineConfig({
       },
     }),
   ],
+
   resolve: {
     alias: {
       '@screens': path.resolve(__dirname, './src/screens'),
@@ -181,6 +185,7 @@ export default defineConfig({
       '@utils': path.resolve(__dirname, './src/utils'),
       '@hooks': path.resolve(__dirname, './src/hooks'),
       '@models': path.resolve(__dirname, './src/models'),
+      '@services': path.resolve(__dirname, './src/services'),
       '@assets': path.resolve(__dirname, './src/assets'),
     },
   },

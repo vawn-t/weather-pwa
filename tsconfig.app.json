@@ -30,6 +30,7 @@
       "@utils": ["src/utils/index.ts"],
       "@hooks": ["src/hooks/index.ts"],
       "@models": ["src/models/index.ts"],
+      "@services": ["src/services/index.ts"],
       "@assets/*": ["src/assets/*"],
     }
   },

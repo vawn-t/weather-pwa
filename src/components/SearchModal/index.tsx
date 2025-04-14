@@ -1,10 +1,10 @@
 import { useState, useEffect, useRef, ChangeEvent, memo } from 'react';
-import { Location, LocationResults } from '../../models/weather';
 import { Button, Input, Text } from '../commons';
+import { Location } from '@models';
 
 // --- Simulated API Data / Function ---
 // Replace this with your actual API call (e.g., to OpenWeatherMap Geocoding API)
-const ALL_POSSIBLE_LOCATIONS = [
+const ALL_POSSIBLE_LOCATIONS: Location[] = [
   { id: 'lon', name: 'London', country: 'GB' },
   { id: 'par', name: 'Paris', country: 'FR' },
   { id: 'nyc', name: 'New York', country: 'US' },
@@ -19,9 +19,7 @@ const ALL_POSSIBLE_LOCATIONS = [
   { id: 'del', name: 'Delhi', country: 'IN' },
 ];
 
-const fetchSimulatedResults = async (
-  query: string
-): Promise<LocationResults> => {
+const fetchSimulatedResults = async (query: string): Promise<Location[]> => {
   console.log(`Simulating API call for: ${query}`);
   // Simulate network delay
   await new Promise((resolve) => setTimeout(resolve, 300));
@@ -53,7 +51,7 @@ const SearchModal = ({
   onSelectLocation,
 }: SearchModalProps) => {
   const [searchQuery, setSearchQuery] = useState('');
-  const [results, setResults] = useState<LocationResults>([]);
+  const [results, setResults] = useState<Location[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
