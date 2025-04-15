@@ -34,7 +34,10 @@
       "@constants": ["src/constants/index.ts"],
       "@stores": ["src/stores/index.ts"],
       "@assets/*": ["src/assets/*"],
-    }
+    },
+    "types": [
+      "vite-plugin-pwa/client"
+    ]
   },
   "include": ["src"]
 }
