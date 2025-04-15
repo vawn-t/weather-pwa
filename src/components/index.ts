@@ -6,3 +6,5 @@ export { default as CurrentWeather } from './CurrentWeather';
 export { default as ForecastSection } from './ForecastSection';
 export { default as SearchModal } from './SearchModal';
 export { default as LocationCard } from './LocationCard';
+export { default as PermissionGate } from './PermissionGate';
+export { default as LoadingIndicator } from './LoadingIndicator';

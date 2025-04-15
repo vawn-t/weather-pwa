@@ -38,7 +38,6 @@ export const useLocation = (
     try {
       // This will trigger the permission prompt if needed
       const position = await getCurrentPosition(options);
-      console.log('position', position);
 
       setLocation({
         latitude: position.coords.latitude,
@@ -51,8 +50,6 @@ export const useLocation = (
       const status = await checkPermissionStatus();
       setPermissionStatus(status);
     } catch (err) {
-      console.log('Error getting location:', err);
-
       if (err instanceof Error) {
         setError(err.message);
       } else {
@@ -61,7 +58,6 @@ export const useLocation = (
         );
       }
 
-      // Update permission status in case of error
       const status = await checkPermissionStatus();
       setPermissionStatus(status);
     } finally {
@@ -69,14 +65,12 @@ export const useLocation = (
     }
   }, []);
 
-  // Check permission status on mount
   useEffect(() => {
     const checkInitialPermission = async () => {
       const status = await checkPermissionStatus();
       setPermissionStatus(status);
 
-      // If auto-request is enabled and permission is not denied, request location
-      if (autoRequest && status !== 'granted') {
+      if (autoRequest || status !== 'granted') {
         requestPermission();
       }
     };

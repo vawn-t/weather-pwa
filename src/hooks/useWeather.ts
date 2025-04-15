@@ -1,82 +1,106 @@
 import { useState, useEffect, useCallback } from 'react';
+
 import {
-  getCurrentLocationWeather,
-  getLocationByCoordinates,
-  getWeatherByLocationName,
+  getForecastByCoordinates,
+  getOpenWeatherMapByCoordinates,
 } from '@services';
-import { WeatherData } from '../models/weather';
-import { useLocation } from './useLocation';
-import { OpenWeatherMapLocation } from '@models';
+import { DailyForecast, LocationState, OpenWeatherMap } from '@models';
+import { getNext4DaysForecast } from '@utils';
+import { WEATHER_DATA_DEFAULT } from '@constants';
+import { addForecast, addWeather, getForecast, getWeather } from '@stores';
 
 interface UseWeatherResult {
-  weatherData: WeatherData;
-  locationData: OpenWeatherMapLocation;
+  weather: OpenWeatherMap;
+  forecast: DailyForecast[];
+  lastUpdated: string;
+  locationName: string;
   loading: boolean;
   error: string | null;
-  searchWeatherByLocation: (query: string) => Promise<void>;
+  asyncFetchWeather: (
+    location: LocationState
+  ) => Promise<OpenWeatherMap | undefined>;
 }
-
-const LOCATION_DATA_DEFAULT: OpenWeatherMapLocation = {
-  name: '',
-  lat: 0,
-  lon: 0,
-  country: '',
-  state: '',
-};
-
-const WEATHER_DATA_DEFAULT: WeatherData = {
-  latitude: 0,
-  longitude: 0,
-  generationtime_ms: 0,
-  utc_offset_seconds: 0,
-  timezone: '',
-  timezone_abbreviation: '',
-  elevation: 0,
-  current_weather: {
-    temperature: 0,
-    windspeed: 0,
-    winddirection: 0,
-    weathercode: 0,
-    time: '',
-  },
-  daily: {
-    time: [],
-    weathercode: [],
-    temperature_2m_max: [],
-    temperature_2m_min: [],
-    sunrise: [],
-    sunset: [],
-  },
-};
 
 /**
  * Hook to fetch and manage weather data
  * @param autoFetch - Whether to automatically fetch weather for current location
  */
-export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
-  const [weatherData, setWeatherData] =
-    useState<WeatherData>(WEATHER_DATA_DEFAULT);
-  const [locationData, setLocationData] = useState<OpenWeatherMapLocation>(
-    LOCATION_DATA_DEFAULT
-  );
+export const useWeather = (
+  location: LocationState | null,
+  autoFetch: boolean = true
+): UseWeatherResult => {
+  const [weather, setWeather] = useState<OpenWeatherMap>(WEATHER_DATA_DEFAULT);
+  const [forecast, setForecast] = useState<DailyForecast[]>([]);
+  const [locationName, setLocationName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string>('');
 
-  const { location, error: locationError } = useLocation(undefined, autoFetch);
+  // Load cached data on initial mount
+  useEffect(() => {
+    const loadCachedData = async () => {
+      await loadWeatherFromIndexedDB();
+      await loadForecastFromIndexedDB();
+    };
 
-  // Fetch weather data for current location when available
+    loadCachedData();
+  }, []);
+
   useEffect(() => {
     if (location && autoFetch) {
       fetchWeatherForCurrentLocation();
+      fetchForecast();
     }
   }, [location]);
 
-  // Handle location error
-  useEffect(() => {
-    if (locationError) {
-      setError(locationError);
+  // Load weather data from IndexedDB
+  const loadWeatherFromIndexedDB = async () => {
+    try {
+      const weatherItems = await getWeather();
+      if (weatherItems && weatherItems.length > 0) {
+        // Get the most recent weather data
+        const sortedWeather = weatherItems.sort(
+          (a, b) => b.timestamp - a.timestamp
+        );
+        const latestWeather = sortedWeather[0];
+
+        setWeather(latestWeather.data);
+        setLocationName(latestWeather.name);
+        setLastUpdated(
+          new Date(latestWeather.timestamp).toLocaleString('en-US', {
+            timeZone: 'UTC',
+          })
+        );
+
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Failed to load weather from IndexedDB:', err);
+      return false;
     }
-  }, [locationError]);
+  };
+
+  const loadForecastFromIndexedDB = async () => {
+    try {
+      const forecastData = await getForecast();
+
+      if (forecastData && forecastData.length > 0) {
+        // Get the most recent forecast
+        const sortedForecasts = forecastData.sort(
+          (a, b) => b.timestamp - a.timestamp
+        );
+        const latestForecast = sortedForecasts[0];
+
+        setForecast(latestForecast.data);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Failed to load forecast from IndexedDB:', err);
+      return false;
+    }
+  };
 
   const fetchWeatherForCurrentLocation = useCallback(async () => {
     if (!location) return;
@@ -94,15 +118,22 @@ export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
         timestamp: location.timestamp,
       } as GeolocationPosition;
 
-      const data = await getCurrentLocationWeather(position);
-      setWeatherData(data);
+      const data = await getOpenWeatherMapByCoordinates(
+        position.coords.latitude,
+        position.coords.longitude
+      );
+      setWeather(data);
 
-      const locationResult = await getLocationByCoordinates(
+      const locationResult = await getOpenWeatherMapByCoordinates(
         location.latitude,
         location.longitude
       );
 
-      setLocationData(locationResult);
+      setLocationName(locationResult.name);
+      setLastUpdated(new Date().toLocaleString('en-US', { timeZone: 'UTC' }));
+
+      // Save to IndexedDB
+      await addWeather(data);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -114,34 +145,64 @@ export const useWeather = (autoFetch: boolean = true): UseWeatherResult => {
     }
   }, [location]);
 
-  const searchWeatherByLocation = async (query: string) => {
+  const fetchForecast = useCallback(async () => {
+    if (!location) return;
+
     setLoading(true);
     setError(null);
-
     try {
-      const result = await getWeatherByLocationName(query);
+      const result = await getForecastByCoordinates(
+        location.latitude,
+        location.longitude
+      );
 
-      if (result) {
-        setWeatherData(result.weather);
-      } else {
-        setError('No matching location found.');
-      }
+      const forecastNext4Days = getNext4DaysForecast(result);
+
+      setForecast(forecastNext4Days);
+
+      // Save to IndexedDB
+      await addForecast(forecastNext4Days);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
-        setError('An unknown error occurred while searching for weather data.');
+        setError('An unknown error occurred while fetching forecast data.');
       }
     } finally {
       setLoading(false);
     }
-  };
+  }, [location]);
+
+  const asyncFetchWeather = useCallback(async (location: LocationState) => {
+    if (!location) return;
+
+    setLoading(true);
+    setError(null);
+    try {
+      const data = await getOpenWeatherMapByCoordinates(
+        location.latitude,
+        location.longitude
+      );
+
+      return data;
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('An unknown error occurred while fetching weather data.');
+      }
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
   return {
-    weatherData,
-    locationData,
+    weather,
+    locationName,
     loading,
     error,
-    searchWeatherByLocation,
+    lastUpdated,
+    forecast,
+    asyncFetchWeather,
   };
 };

@@ -1,26 +1,47 @@
-import { CurrentWeather, ForecastSection, HomeHeader } from '@components';
+import {
+  CurrentWeather,
+  ForecastSection,
+  HomeHeader,
+  PermissionGate,
+  LoadingIndicator,
+} from '@components';
 import { MobileLayout } from '@layouts';
-import { useBackgroundImage, useWeather } from '@hooks';
+import { useBackgroundImage, useLocation, useWeather } from '@hooks';
 
 const Home = () => {
-  const location = 'Tokyo';
-  const imgURL = useBackgroundImage(location);
+  const { location, permissionStatus } = useLocation();
 
-  const { loading, locationData } = useWeather();
+  const {
+    loading: weatherLoading,
+    locationName,
+    forecast,
+    weather,
+    lastUpdated,
+  } = useWeather(location);
 
-  if (loading) {
-    return <div>Loading...</div>;
+  const { loading: bgLoading, backgroundImage } =
+    useBackgroundImage(locationName);
+
+  if (weatherLoading || bgLoading) {
+    return <LoadingIndicator />;
+  }
+
+  if (permissionStatus !== 'granted') {
+    return <PermissionGate />;
   }
 
   return (
     <MobileLayout
-      style={{ '--image-url': `url(${imgURL})` } as React.CSSProperties}
-      className="bg-[image:var(--image-url)] "
+      style={
+        { '--image-url': `url(${backgroundImage})` } as React.CSSProperties
+      }
+      className="bg-[image:var(--image-url)]"
     >
-      <HomeHeader location={locationData.name} />
+      <HomeHeader location={locationName} />
 
-      <CurrentWeather />
-      <ForecastSection />
+      <CurrentWeather data={weather} lastUpdated={lastUpdated} />
+
+      <ForecastSection data={forecast} />
     </MobileLayout>
   );
 };

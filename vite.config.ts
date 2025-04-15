@@ -2,12 +2,14 @@ import path from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+// import basicSsl from '@vitejs/plugin-basic-ssl';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
+    // basicSsl(),
     tailwindcss(),
 
     VitePWA({
@@ -135,36 +137,53 @@ export default defineConfig({
               },
             },
           },
-          // Finding What data to cache here
-          // {
-          // 	// Cache app data (modify this pattern as needed)
-          // 	urlPattern: /^https?:\/\/.*\/api\/.*$/i,
-          // 	handler: 'NetworkFirst',
-          // 	options: {
-          // 		cacheName: 'app-data-cache',
-          // 		expiration: {
-          // 			maxEntries: 100,
-          // 			maxAgeSeconds: 86400 // 24 hours
-          // 		},
-          // 		networkTimeoutSeconds: 3, // Fall back to cache if network takes more than 3 seconds
-          // 		cacheableResponse: {
-          // 			statuses: [0, 200]
-          // 		}
-          // 	}
-          // },
-          // Considering caching static assets for both local and external static assets
-          // {
-          // 	// Cache static assets with a Cache First strategy
-          // 	urlPattern: /\.(?:png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot|ico)$/i,
-          // 	handler: 'CacheFirst',
-          // 	options: {
-          // 		cacheName: 'static-assets',
-          // 		expiration: {
-          // 			maxEntries: 100,
-          // 			maxAgeSeconds: 604800 // 7 days
-          // 		}
-          // 	}
-          // }
+
+          {
+            // Cache static assets with a Cache First strategy
+            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot|ico)$/i,
+            handler: 'CacheFirst',
+            options: {
+              cacheName: 'static-assets-cache',
+              expiration: {
+                maxEntries: 100,
+                maxAgeSeconds: 2592000, // 30 days
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+
+          {
+            // Cache app shell files
+            urlPattern: /\/(index\.html)?$/,
+            handler: 'NetworkFirst',
+            options: {
+              cacheName: 'app-shell-cache',
+              expiration: {
+                maxAgeSeconds: 86400, // 24 hours
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
+
+          {
+            // Cache CSS/JS with a stale-while-revalidate strategy
+            urlPattern: /\.(?:js|css)$/i,
+            handler: 'StaleWhileRevalidate',
+            options: {
+              cacheName: 'static-resources-cache',
+              expiration: {
+                maxEntries: 50,
+                maxAgeSeconds: 86400, // 24 hours
+              },
+              cacheableResponse: {
+                statuses: [0, 200],
+              },
+            },
+          },
         ],
       },
 
@@ -186,6 +205,8 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, './src/hooks'),
       '@models': path.resolve(__dirname, './src/models'),
       '@services': path.resolve(__dirname, './src/services'),
+      '@constants': path.resolve(__dirname, './src/constants'),
+      '@stores': path.resolve(__dirname, './src/stores'),
       '@assets': path.resolve(__dirname, './src/assets'),
     },
   },

@@ -8,7 +8,7 @@ interface HeaderProps {
 
 const HomeHeader = ({ location }: HeaderProps) => {
   return (
-    <div className="relative z-10 flex justify-between items-center p-4">
+    <div className="relative z-10 flex justify-between items-center pt-4">
       <LocationDisplay location={location} />
 
       <NavLink to="/my-locations" end>
