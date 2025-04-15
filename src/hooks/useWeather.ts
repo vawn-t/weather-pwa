@@ -12,7 +12,7 @@ interface UseWeatherResult {
   weather: OpenWeatherMap;
   forecast: DailyForecast[];
   lastUpdated: string;
-  locationData: string;
+  locationName: string;
   loading: boolean;
   error: string | null;
   asyncFetchWeather: (
@@ -25,12 +25,12 @@ interface UseWeatherResult {
  * @param autoFetch - Whether to automatically fetch weather for current location
  */
 export const useWeather = (
-  location?: LocationState,
+  location: LocationState | null,
   autoFetch: boolean = true
 ): UseWeatherResult => {
   const [weather, setWeather] = useState<OpenWeatherMap>(WEATHER_DATA_DEFAULT);
   const [forecast, setForecast] = useState<DailyForecast[]>([]);
-  const [locationData, setLocationData] = useState<string>('');
+  const [locationName, setLocationName] = useState<string>('');
   const [loading, setLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
@@ -69,7 +69,7 @@ export const useWeather = (
         location.longitude
       );
 
-      setLocationData(locationResult.name);
+      setLocationName(locationResult.name);
 
       setLastUpdated(new Date().toLocaleString('en-US', { timeZone: 'UTC' }));
     } catch (err) {
@@ -130,7 +130,7 @@ export const useWeather = (
 
   return {
     weather,
-    locationData,
+    locationName,
     loading,
     error,
     lastUpdated,

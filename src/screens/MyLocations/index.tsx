@@ -1,4 +1,5 @@
 import { useCallback, useState, useEffect } from 'react';
+import classNames from 'classnames';
 
 import {
   LocationCard,
@@ -10,13 +11,14 @@ import { MobileLayout } from '@layouts';
 import { OpenWeatherMap, OpenWeatherMapLocation } from '@models';
 import { useWeather } from '@hooks';
 import { indexedDBService } from '@services';
+import { COLORS } from '@constants';
 
 const MyLocations = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [locations, setLocations] = useState<OpenWeatherMap[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
-  const { asyncFetchWeather } = useWeather();
+  const { asyncFetchWeather } = useWeather(null);
 
   // Load saved locations from IndexedDB on component mount
   useEffect(() => {
@@ -101,7 +103,7 @@ const MyLocations = () => {
   }, []);
 
   return (
-    <MobileLayout className="bg-gradient-to-b from-[#391A49] via-[#301D5C] via-[#262171] via-[#301D5C] to-[#391A49] gap-6">
+    <MobileLayout className={classNames('gap-6', COLORS.GRADIENT)}>
       <MyLocationsHeader onOpenModal={openModal} />
 
       <div className="flex-grow overflow-y-auto">

@@ -58,7 +58,6 @@ export const useLocation = (
         );
       }
 
-      // Update permission status in case of error
       const status = await checkPermissionStatus();
       setPermissionStatus(status);
     } finally {
@@ -66,7 +65,6 @@ export const useLocation = (
     }
   }, []);
 
-  // Check permission status on mount
   useEffect(() => {
     const checkInitialPermission = async () => {
       const status = await checkPermissionStatus();

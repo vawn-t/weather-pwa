@@ -11,7 +11,7 @@ const DateDisplay = ({ date }: DateDisplayProps) => {
       <Text as="h1" className="text-[40px] font-semibold mb-1">
         {getNewDate()}
       </Text>
-      <Text className="text-sm shadow">
+      <Text className="text-sm">
         Updated as of {convertDateToFormattedString(date)}
       </Text>
     </div>

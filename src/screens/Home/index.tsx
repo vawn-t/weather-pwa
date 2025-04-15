@@ -1,23 +1,43 @@
-import { CurrentWeather, ForecastSection, HomeHeader } from '@components';
+import {
+  CurrentWeather,
+  ForecastSection,
+  HomeHeader,
+  PermissionGate,
+  LoadingIndicator,
+} from '@components';
 import { MobileLayout } from '@layouts';
 import { useBackgroundImage, useLocation, useWeather } from '@hooks';
 
 const Home = () => {
-  const locationTest = 'Tokyo';
-  const imgURL = useBackgroundImage(locationTest);
-
   const { location } = useLocation();
 
-  // TODO: Handle navigate screen required location permission if not granted
+  const {
+    loading: weatherLoading,
+    locationName,
+    forecast,
+    weather,
+    lastUpdated,
+  } = useWeather(location);
 
-  const { locationData, forecast, weather, lastUpdated } = useWeather(location);
+  const { loading: bgLoading, backgroundImage } =
+    useBackgroundImage(locationName);
+
+  if (weatherLoading || bgLoading) {
+    return <LoadingIndicator />;
+  }
+
+  if (!location) {
+    return <PermissionGate />;
+  }
 
   return (
     <MobileLayout
-      style={{ '--image-url': `url(${imgURL})` } as React.CSSProperties}
+      style={
+        { '--image-url': `url(${backgroundImage})` } as React.CSSProperties
+      }
       className="bg-[image:var(--image-url)]"
     >
-      <HomeHeader location={locationData} />
+      <HomeHeader location={locationName} />
 
       <CurrentWeather data={weather} lastUpdated={lastUpdated} />
 
