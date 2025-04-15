@@ -34,7 +34,8 @@
       "@constants": ["src/constants/index.ts"],
       "@stores": ["src/stores/index.ts"],
       "@assets/*": ["src/assets/*"],
-    }
+    },
+    
   },
   "include": ["src"]
 }
