@@ -35,9 +35,7 @@
       "@stores": ["src/stores/index.ts"],
       "@assets/*": ["src/assets/*"],
     },
-    "types": [
-      "vite-plugin-pwa/client"
-    ]
+    
   },
   "include": ["src"]
 }
