@@ -9,7 +9,7 @@ import { MobileLayout } from '@layouts';
 import { useBackgroundImage, useLocation, useWeather } from '@hooks';
 
 const Home = () => {
-  const { location } = useLocation();
+  const { location, permissionStatus } = useLocation();
 
   const {
     loading: weatherLoading,
@@ -26,7 +26,7 @@ const Home = () => {
     return <LoadingIndicator />;
   }
 
-  if (!location) {
+  if (permissionStatus !== 'granted') {
     return <PermissionGate />;
   }
 

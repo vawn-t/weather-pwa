@@ -5,8 +5,9 @@ import {
   getOpenWeatherMapByCoordinates,
 } from '@services';
 import { DailyForecast, LocationState, OpenWeatherMap } from '@models';
-import { getNext5DaysForecast } from '@utils';
+import { getNext4DaysForecast } from '@utils';
 import { WEATHER_DATA_DEFAULT } from '@constants';
+import { addForecast, addWeather, getForecast, getWeather } from '@stores';
 
 interface UseWeatherResult {
   weather: OpenWeatherMap;
@@ -35,12 +36,71 @@ export const useWeather = (
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string>('');
 
+  // Load cached data on initial mount
+  useEffect(() => {
+    const loadCachedData = async () => {
+      await loadWeatherFromIndexedDB();
+      await loadForecastFromIndexedDB();
+    };
+
+    loadCachedData();
+  }, []);
+
   useEffect(() => {
     if (location && autoFetch) {
       fetchWeatherForCurrentLocation();
       fetchForecast();
     }
   }, [location]);
+
+  // Load weather data from IndexedDB
+  const loadWeatherFromIndexedDB = async () => {
+    try {
+      const weatherItems = await getWeather();
+      if (weatherItems && weatherItems.length > 0) {
+        // Get the most recent weather data
+        const sortedWeather = weatherItems.sort(
+          (a, b) => b.timestamp - a.timestamp
+        );
+        const latestWeather = sortedWeather[0];
+
+        setWeather(latestWeather.data);
+        setLocationName(latestWeather.name);
+        setLastUpdated(
+          new Date(latestWeather.timestamp).toLocaleString('en-US', {
+            timeZone: 'UTC',
+          })
+        );
+
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Failed to load weather from IndexedDB:', err);
+      return false;
+    }
+  };
+
+  const loadForecastFromIndexedDB = async () => {
+    try {
+      const forecastData = await getForecast();
+
+      if (forecastData && forecastData.length > 0) {
+        // Get the most recent forecast
+        const sortedForecasts = forecastData.sort(
+          (a, b) => b.timestamp - a.timestamp
+        );
+        const latestForecast = sortedForecasts[0];
+
+        setForecast(latestForecast.data);
+        return true;
+      }
+      return false;
+    } catch (err) {
+      console.error('Failed to load forecast from IndexedDB:', err);
+      return false;
+    }
+  };
 
   const fetchWeatherForCurrentLocation = useCallback(async () => {
     if (!location) return;
@@ -70,8 +130,10 @@ export const useWeather = (
       );
 
       setLocationName(locationResult.name);
-
       setLastUpdated(new Date().toLocaleString('en-US', { timeZone: 'UTC' }));
+
+      // Save to IndexedDB
+      await addWeather(data);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
@@ -85,6 +147,7 @@ export const useWeather = (
 
   const fetchForecast = useCallback(async () => {
     if (!location) return;
+
     setLoading(true);
     setError(null);
     try {
@@ -93,7 +156,12 @@ export const useWeather = (
         location.longitude
       );
 
-      setForecast(getNext5DaysForecast(result));
+      const forecastNext4Days = getNext4DaysForecast(result);
+
+      setForecast(forecastNext4Days);
+
+      // Save to IndexedDB
+      await addForecast(forecastNext4Days);
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);

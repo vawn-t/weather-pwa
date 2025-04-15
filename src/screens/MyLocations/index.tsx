@@ -10,8 +10,8 @@ import {
 import { MobileLayout } from '@layouts';
 import { OpenWeatherMap, OpenWeatherMapLocation } from '@models';
 import { useWeather } from '@hooks';
-import { indexedDBService } from '@services';
 import { COLORS } from '@constants';
+import { getLocations, addLocation, deleteLocation } from '@stores';
 
 const MyLocations = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,7 +25,7 @@ const MyLocations = () => {
     const loadSavedLocations = async () => {
       try {
         setIsLoading(true);
-        const savedLocations = await indexedDBService.getLocations();
+        const savedLocations = await getLocations();
         if (savedLocations && savedLocations.length > 0) {
           // Extract the weather data from each record
           const weatherData = savedLocations.map((loc) => loc.data);
@@ -72,7 +72,7 @@ const MyLocations = () => {
 
             setLocations((prevLocations) => [...prevLocations, newLocation]);
 
-            await indexedDBService.addLocation(newLocation);
+            await addLocation(newLocation);
           }
         } catch (error) {
           console.error('Failed to fetch weather data:', error);
@@ -90,10 +90,8 @@ const MyLocations = () => {
   // Handler for deleting a location
   const handleDeleteLocation = useCallback(async (id: number) => {
     try {
-      // Delete from IndexedDB first
-      await indexedDBService.deleteLocation(id);
+      await deleteLocation(id);
 
-      // Then update the UI by removing the location from state
       setLocations((prevLocations) =>
         prevLocations.filter((location) => location.id !== id)
       );

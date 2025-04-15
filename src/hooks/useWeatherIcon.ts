@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
 
+import defaultWeatherIcon from '@assets/weather-icons/02d.png';
+
 /**
  * Custom hook to load weather icons dynamically based on icon code
  * @param iconCode - The icon code for the weather condition (e.g., '01d', '02n')
  * @returns The loaded icon URL or undefined while loading
  */
 export const useWeatherIcon = (iconCode: string): string | undefined => {
-  const [weatherIcon, setWeatherIcon] = useState<string>();
+  const [weatherIcon, setWeatherIcon] = useState<string>(defaultWeatherIcon);
 
   useEffect(() => {
     // Only attempt to load if we have an iconCode

@@ -1,11 +1,19 @@
-import { OpenWeatherMap } from '@models';
+import {
+  DB_NAME,
+  DB_VERSION,
+  FORECAST_STORE,
+  LOCATIONS_STORE,
+  WEATHER_STORE,
+} from '@constants';
 
-const DB_NAME = 'weatherApp';
-const DB_VERSION = 1;
-const LOCATIONS_STORE = 'locations';
-
-// Private variable to store the database connection
 let db: IDBDatabase | null = null;
+
+export interface StoredItem<T> {
+  id: number;
+  name: string;
+  data: T;
+  timestamp: number;
+}
 
 // Initialize the database
 const initDB = async (): Promise<IDBDatabase> => {
@@ -34,24 +42,43 @@ const initDB = async (): Promise<IDBDatabase> => {
           keyPath: 'id',
         });
         objectStore.createIndex('name', 'name', { unique: false });
-        objectStore.createIndex('timestamp', 'timestamp', { unique: false });
+      }
+
+      if (!database.objectStoreNames.contains(WEATHER_STORE)) {
+        // Create weather object store if it doesn't exist
+        const objectStore = database.createObjectStore(WEATHER_STORE, {
+          keyPath: 'id',
+        });
+        objectStore.createIndex('name', 'name', { unique: false });
+      }
+
+      if (!database.objectStoreNames.contains(FORECAST_STORE)) {
+        // Create weather object store if it doesn't exist
+        const objectStore = database.createObjectStore(FORECAST_STORE, {
+          keyPath: 'id',
+        });
+        objectStore.createIndex('name', 'name', { unique: false });
       }
     };
   });
 };
 
-const addLocation = async (location: OpenWeatherMap): Promise<void> => {
+const addItem = async <T>(
+  storeName: string,
+  item: T,
+  id: number,
+  name: string
+): Promise<void> => {
   const database = await initDB();
 
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction([LOCATIONS_STORE], 'readwrite');
-    const store = transaction.objectStore(LOCATIONS_STORE);
+    const transaction = database.transaction([storeName], 'readwrite');
+    const store = transaction.objectStore(storeName);
 
-    // Create a record with a unique ID (using city ID from OpenWeatherMap)
     const record = {
-      id: location.id,
-      name: location.name,
-      data: location,
+      id,
+      name,
+      data: item,
       timestamp: Date.now(),
     };
 
@@ -62,14 +89,12 @@ const addLocation = async (location: OpenWeatherMap): Promise<void> => {
   });
 };
 
-const getLocations = async (): Promise<
-  { id: string; name: string; data: OpenWeatherMap; timestamp: number }[]
-> => {
+const getItems = async <T>(storeName: string): Promise<StoredItem<T>[]> => {
   const database = await initDB();
 
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction([LOCATIONS_STORE], 'readonly');
-    const store = transaction.objectStore(LOCATIONS_STORE);
+    const transaction = database.transaction([storeName], 'readonly');
+    const store = transaction.objectStore(storeName);
     const request = store.getAll();
 
     request.onsuccess = () => resolve(request.result);
@@ -77,23 +102,17 @@ const getLocations = async (): Promise<
   });
 };
 
-// Delete a location by ID
-const deleteLocation = async (locationId: number): Promise<void> => {
+const deleteItem = async (storeName: string, itemId: number): Promise<void> => {
   const database = await initDB();
 
   return new Promise((resolve, reject) => {
-    const transaction = database.transaction([LOCATIONS_STORE], 'readwrite');
-    const store = transaction.objectStore(LOCATIONS_STORE);
-    const request = store.delete(locationId);
+    const transaction = database.transaction([storeName], 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const request = store.delete(itemId);
 
     request.onsuccess = () => resolve();
     request.onerror = (event) => reject(event);
   });
 };
 
-export const indexedDBService = {
-  initDB,
-  addLocation,
-  getLocations,
-  deleteLocation,
-};
+export { addItem, getItems, deleteItem };

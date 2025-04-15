@@ -58,7 +58,7 @@ function processForecastData(data: OpenWeatherMapForecast): DailyForecast[] {
  * @param data The raw response from the OpenWeatherMap API
  * @returns An array of simplified daily forecasts for the next 5 days
  */
-export function getNext5DaysForecast(
+export function getNext4DaysForecast(
   data: OpenWeatherMapForecast
 ): DailyForecast[] {
   const processed = processForecastData(data);
