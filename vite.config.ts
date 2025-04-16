@@ -128,6 +128,8 @@ export default defineConfig({
             },
           },
         ],
+
+        importScripts: ['js/sw-notifications.js'],
       },
 
       // devOptions: {

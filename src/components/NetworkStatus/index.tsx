@@ -11,8 +11,6 @@ interface NetworkStatusProps {
 const NetworkStatus = ({ date }: NetworkStatusProps) => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
 
-  console.log('NetworkStatus', isOnline);
-
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
     const handleOffline = () => setIsOnline(false);
