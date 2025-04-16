@@ -39,7 +39,9 @@ export const showWeatherNotification = async (
     // Get the service worker registration
     const registration = await navigator.serviceWorker.ready;
 
-    console.log('Service worker registration:', registration);
+    if (!registration) {
+      throw new Error('Service worker registration not found');
+    }
 
     // Use the registration to show the notification
     await registration.showNotification(title, options);

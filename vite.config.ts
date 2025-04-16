@@ -132,12 +132,10 @@ export default defineConfig({
         importScripts: ['js/sw-notifications.js'],
       },
 
-      // devOptions: {
-      //   enabled: true,
-      //   navigateFallback: 'index.html',
-      //   suppressWarnings: true,
-      //   type: 'module',
-      // },
+      devOptions: {
+        enabled: true,
+        navigateFallback: 'index.html',
+      },
     }),
   ],
 

@@ -13,8 +13,8 @@ self.addEventListener('push', (event) => {
       data = {
         title: 'Weather Notification',
         body: textData,
-        icon: '/weather-icons/default.svg',
-        badge: '/pwa-192x192.png',
+        icon: 'pwa-192x192.png',
+        badge: 'pwa-192x192.png',
         tag: 'weather-forecast',
       };
     }
