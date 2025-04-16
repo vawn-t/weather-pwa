@@ -2,14 +2,14 @@ import path from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-// import basicSsl from '@vitejs/plugin-basic-ssl';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 import tailwindcss from '@tailwindcss/vite';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    // basicSsl(),
+    basicSsl(),
     tailwindcss(),
 
     VitePWA({
@@ -55,6 +55,9 @@ export default defineConfig({
       },
 
       workbox: {
+        globPatterns: [
+          '**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff,eot,ttf,ico}',
+        ],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
