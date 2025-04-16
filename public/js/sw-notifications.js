@@ -3,7 +3,21 @@ self.addEventListener('push', (event) => {
   if (!event.data) return;
 
   try {
-    const data = event.data.json();
+    // Try to parse as JSON first
+    let data;
+    try {
+      data = event.data.json();
+    } catch (e) {
+      // If not JSON, try to get as text
+      const textData = event.data.text();
+      data = {
+        title: 'Weather Notification',
+        body: textData,
+        icon: '/weather-icons/default.svg',
+        badge: '/pwa-192x192.png',
+        tag: 'weather-forecast',
+      };
+    }
 
     console.log('Push event received:', data);
 
