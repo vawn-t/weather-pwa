@@ -55,6 +55,9 @@ export default defineConfig({
       },
 
       workbox: {
+        globPatterns: [
+          '**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff,eot,ttf,ico}',
+        ],
         cleanupOutdatedCaches: true,
         clientsClaim: true,
         skipWaiting: true,
@@ -125,6 +128,8 @@ export default defineConfig({
             },
           },
         ],
+
+        importScripts: ['js/sw-notifications.js'],
       },
 
       // devOptions: {
