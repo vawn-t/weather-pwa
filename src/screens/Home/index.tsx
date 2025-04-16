@@ -42,7 +42,7 @@ const Home = () => {
           `Weather forecast for tomorrow in ${locationName}`,
           {
             body: `Tomorrow: ${tomorrowForecast.temp}°c, ${tomorrowForecast.wind} km/h wind`,
-            icon: `/weather-icons/${tomorrowForecast.iconCode}.svg`, // Adjust path based on your icon storage
+            icon: `/icons/weathers/${tomorrowForecast.iconCode}.png`, // Adjust path based on your icon storage
             badge: '/pwa-192x192.png',
             tag: 'weather-forecast', // Used to replace existing notifications
             requireInteraction: true,
