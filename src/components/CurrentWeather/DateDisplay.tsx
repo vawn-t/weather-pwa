@@ -1,4 +1,7 @@
+//Utils
 import { getNewDate } from '@utils';
+
+// Components
 import { Text } from '../commons';
 import NetworkStatus from '../NetworkStatus';
 

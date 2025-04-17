@@ -1,7 +1,10 @@
 import classNames from 'classnames';
 import { useEffect, useState } from 'react';
 
+// Utils
 import { convertDateToFormattedString } from '@utils';
+
+// Components
 import { Text } from '../commons';
 
 interface NetworkStatusProps {

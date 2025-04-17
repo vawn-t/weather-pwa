@@ -1,3 +1,4 @@
+// Component
 import { SearchIcon } from '../icons';
 import { Button, Text } from '../commons';
 

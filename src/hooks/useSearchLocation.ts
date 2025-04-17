@@ -1,5 +1,7 @@
-import { searchLocation } from '@services';
 import { useState } from 'react';
+
+// Services
+import { searchLocation } from '@services';
 
 export const useSearchLocation = (limit: number = 3) => {
   const [loading, setLoading] = useState<boolean>(false);

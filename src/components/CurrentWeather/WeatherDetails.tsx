@@ -1,3 +1,4 @@
+// Components
 import { WeatherDetail } from '.';
 import WeatherDetailItem from './WeatherDetailItem';
 

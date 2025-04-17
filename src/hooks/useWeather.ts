@@ -1,12 +1,21 @@
 import { useState, useEffect, useCallback } from 'react';
 
+// Services
 import {
   getForecastByCoordinates,
   getOpenWeatherMapByCoordinates,
 } from '@services';
+
+// Models
 import { DailyForecast, LocationState, OpenWeatherMap } from '@models';
+
+// Utils
 import { getNext4DaysForecast } from '@utils';
+
+// Constants
 import { WEATHER_DATA_DEFAULT } from '@constants';
+
+// Stores
 import { addForecast, addWeather, getForecast, getWeather } from '@stores';
 
 interface UseWeatherResult {

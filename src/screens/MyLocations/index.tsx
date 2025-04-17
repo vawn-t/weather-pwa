@@ -1,16 +1,27 @@
 import { useCallback, useState, useEffect } from 'react';
 import classNames from 'classnames';
 
+// Components
 import {
   LocationCard,
   MyLocationsHeader,
   SearchModal,
   Text,
 } from '@components';
+
+// Layouts
 import { MobileLayout } from '@layouts';
+
+// Models
 import { OpenWeatherMap, OpenWeatherMapLocation } from '@models';
+
+// Hooks
 import { useWeather } from '@hooks';
+
+// Constants
 import { COLORS } from '@constants';
+
+// Stores
 import { getLocations, addLocation, deleteLocation } from '@stores';
 
 const MyLocations = () => {

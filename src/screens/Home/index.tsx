@@ -1,6 +1,9 @@
 import { useEffect } from 'react';
+
+// Utils
 import { requestNotificationPermission, showWeatherNotification } from '@utils';
 
+// Layouts
 import {
   CurrentWeather,
   ForecastSection,
@@ -8,7 +11,11 @@ import {
   PermissionGate,
   LoadingIndicator,
 } from '@components';
+
+// Layouts
 import { MobileLayout } from '@layouts';
+
+// Hooks
 import { useBackgroundImage, useLocation, useWeather } from '@hooks';
 
 const Home = () => {

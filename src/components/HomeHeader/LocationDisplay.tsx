@@ -1,3 +1,4 @@
+// Components
 import { Text } from '../commons';
 import { LocationIcon } from '../icons';
 

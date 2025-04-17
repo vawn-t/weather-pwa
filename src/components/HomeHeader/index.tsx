@@ -1,4 +1,6 @@
 import { NavLink } from 'react-router';
+
+// Components
 import { MenuIcon } from '../icons';
 import LocationDisplay from './LocationDisplay';
 
