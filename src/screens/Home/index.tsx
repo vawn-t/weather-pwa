@@ -25,7 +25,6 @@ const Home = () => {
   const { loading: bgLoading, backgroundImage } =
     useBackgroundImage(locationName);
 
-  // Request notification permission and show weather notification when component mounts
   useEffect(() => {
     const setupNotifications = async () => {
       const notificationPermission = await requestNotificationPermission();
@@ -42,10 +41,9 @@ const Home = () => {
           `Weather forecast for tomorrow in ${locationName}`,
           {
             body: `Tomorrow: ${tomorrowForecast.temp}°c, ${tomorrowForecast.wind} km/h wind`,
-            icon: `/icons/weathers/${tomorrowForecast.iconCode}.png`, // Adjust path based on your icon storage
+            icon: `/icons/weathers/${tomorrowForecast.iconCode}.png`,
             badge: '/pwa-192x192.png',
             tag: 'weather-forecast', // Used to replace existing notifications
-            requireInteraction: true,
           }
         );
       }
