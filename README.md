@@ -1,4 +1,4 @@
-# PWA practice
+# PWAs practice
 
 ## OVERVIEW
 
