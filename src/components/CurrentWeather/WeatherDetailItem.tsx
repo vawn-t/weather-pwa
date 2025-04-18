@@ -1,4 +1,6 @@
 import { JSX } from 'react';
+
+// Components
 import { Text } from '../commons';
 
 interface WeatherDetailItemProps {

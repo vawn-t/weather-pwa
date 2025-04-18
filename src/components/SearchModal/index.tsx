@@ -1,7 +1,12 @@
 import { useState, useEffect, useRef, ChangeEvent, memo } from 'react';
 
+// Components
 import { Button, Input, Text } from '../commons';
+
+// Models
 import { OpenWeatherMapLocation } from '@models';
+
+// Hooks
 import { useSearchLocation } from '@hooks';
 
 interface SearchModalProps {

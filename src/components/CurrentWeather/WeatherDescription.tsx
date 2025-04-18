@@ -1,4 +1,7 @@
+// Components
 import { Text } from '../commons';
+
+// Hooks
 import { useWeatherIcon } from '@hooks';
 
 interface WeatherDescriptionProps {

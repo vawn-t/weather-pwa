@@ -1,6 +1,9 @@
 import { useState, useEffect, useCallback } from 'react';
 
+// Models
 import { LocationState, PermissionStatus } from '@models';
+
+// Utils
 import { checkPermissionStatus, getCurrentPosition } from '@utils';
 
 interface UseLocationResult {

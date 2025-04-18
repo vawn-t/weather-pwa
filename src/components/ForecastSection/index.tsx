@@ -1,4 +1,7 @@
+// Models
 import { DailyForecast } from '@models';
+
+// Components
 import ForecastCard from './ForecastCard';
 
 interface ForecastSectionProps {

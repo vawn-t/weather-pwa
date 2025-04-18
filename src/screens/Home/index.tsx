@@ -1,19 +1,25 @@
 import { useEffect } from 'react';
-import { requestNotificationPermission, showWeatherNotification } from '@utils';
 
+// Layouts
+import { MobileLayout } from '@layouts';
+
+// Components
 import {
   CurrentWeather,
   ForecastSection,
   HomeHeader,
-  PermissionGate,
   LoadingIndicator,
+  PermissionGate,
 } from '@components';
-import { MobileLayout } from '@layouts';
+
+// Hooks
 import { useBackgroundImage, useLocation, useWeather } from '@hooks';
+
+// Utils
+import { requestNotificationPermission, showWeatherNotification } from '@utils';
 
 const Home = () => {
   const { location, permissionStatus } = useLocation();
-
   const {
     loading: weatherLoading,
     locationName,
@@ -21,20 +27,19 @@ const Home = () => {
     weather,
     lastUpdated,
   } = useWeather(location);
-
   const { loading: bgLoading, backgroundImage } =
     useBackgroundImage(locationName);
 
+  // Handle notification setup when weather data is available
   useEffect(() => {
     const setupNotifications = async () => {
+      // Only proceed if we have forecast data
+      if (!forecast || forecast.length === 0) return;
+
       const notificationPermission = await requestNotificationPermission();
 
-      // If permission granted and we have forecast data, show notification
-      if (
-        notificationPermission === 'granted' &&
-        forecast &&
-        forecast.length > 0
-      ) {
+      // Show notification if permission is granted
+      if (notificationPermission === 'granted') {
         const tomorrowForecast = forecast[0]; // First item in forecast array is tomorrow
 
         showWeatherNotification(
@@ -49,15 +54,18 @@ const Home = () => {
       }
     };
 
+    // Only run notification setup when data is loaded
     if (!weatherLoading && !bgLoading && forecast.length > 0) {
       setupNotifications();
     }
   }, [weatherLoading, bgLoading, forecast, locationName]);
 
+  // Show loading state
   if (weatherLoading || bgLoading) {
     return <LoadingIndicator />;
   }
 
+  // Show permission gate if location permission not granted
   if (permissionStatus !== 'granted') {
     return <PermissionGate />;
   }
@@ -70,9 +78,7 @@ const Home = () => {
       className="bg-[image:var(--image-url)]"
     >
       <HomeHeader location={locationName} />
-
       <CurrentWeather data={weather} lastUpdated={lastUpdated} />
-
       <ForecastSection data={forecast} />
     </MobileLayout>
   );

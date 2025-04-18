@@ -1,6 +1,9 @@
 import { JSX, useMemo } from 'react';
 
+// Models
 import { OpenWeatherMap } from '@models';
+
+// Components
 import DateDisplay from './DateDisplay';
 import WeatherDescription from './WeatherDescription';
 import WeatherDetails from './WeatherDetails';

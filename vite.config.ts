@@ -73,7 +73,7 @@ export default defineConfig({
               cacheName: 'weather-api-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 86400, // 24 hours (1 day) stale cache
+                maxAgeSeconds: 86400, // 24 hours stale cache
               },
               cacheableResponse: {
                 statuses: [0, 200],

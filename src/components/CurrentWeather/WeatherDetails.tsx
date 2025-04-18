@@ -1,3 +1,4 @@
+// Components
 import { WeatherDetail } from '.';
 import WeatherDetailItem from './WeatherDetailItem';
 
@@ -7,7 +8,7 @@ interface WeatherDetailProps {
 
 const WeatherDetails = ({ data }: WeatherDetailProps) => {
   return (
-    <div className="flex justify-between items-center p-4 gap-[75px]">
+    <div className="flex justify-between items-center py-4">
       {data.map((item, index) => (
         <WeatherDetailItem
           key={item.label + index}

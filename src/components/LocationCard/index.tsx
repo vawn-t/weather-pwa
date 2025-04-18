@@ -1,6 +1,10 @@
-import { useWeatherIcon } from '@hooks';
-import { Button, Text } from '../commons';
 import { memo, useCallback } from 'react';
+
+// Hooks
+import { useWeatherIcon } from '@hooks';
+
+// Components
+import { Button, Text } from '../commons';
 
 interface LocationCardProps {
   city: string;

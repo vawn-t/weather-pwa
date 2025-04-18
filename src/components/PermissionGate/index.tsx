@@ -1,7 +1,9 @@
 import classNames from 'classnames';
 
+// Components
 import { Button, Text } from '../commons';
 
+// Constants
 import { COLORS } from '@constants';
 
 const PermissionGate = () => {
