@@ -9,7 +9,7 @@ const MobileLayout = ({ children, className, ...rest }: MobileLayoutProps) => {
   return (
     <main
       className={classNames(
-        'py-6 px-6 relative flex flex-1 flex-col h-screen w-screen bg-cover bg-center overflow-auto',
+        'p-[var(--content-padding)] px-6 relative flex flex-1 flex-col h-screen w-screen bg-cover bg-center overflow-auto',
         className
       )}
       {...rest}
