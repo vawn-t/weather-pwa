@@ -21,7 +21,7 @@ const ForecastCard = ({ day, iconCode, temp, wind }: ForecastCardProps) => {
       </Text>
 
       <div className="flex flex-col items-center gap-1">
-        <img className="w-11" src={weatherIcon} alt="Weather icon" />
+        <img width={44} height={44} src={weatherIcon} alt="Weather icon" />
 
         <Text variant="secondary">{temp}&deg;</Text>
 

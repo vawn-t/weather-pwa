@@ -21,6 +21,22 @@ export default defineConfig({
         name: 'Weather',
         short_name: 'Weather',
         description: 'This is the weather forecast app.',
+        screenshots: [
+          {
+            src: 'screenshots/screenshot-1.webp',
+            sizes: '1080x2340',
+            type: 'image/webp',
+            platform: 'ios',
+            label: 'Weather forecast for the week',
+          },
+          {
+            src: 'screenshots/screenshot-2.webp',
+            sizes: '1542x1294',
+            type: 'image/webp',
+            form_factor: 'wide',
+            label: 'Weather forecast for the week',
+          },
+        ],
         icons: [
           {
             src: 'pwa-64x64.png',

@@ -66,14 +66,16 @@ const Home = () => {
   }
 
   // Show permission gate if location permission not granted
-  if (permissionStatus !== 'granted') {
+  if (permissionStatus !== 'granted' && permissionStatus !== 'prompt') {
     return <PermissionGate />;
   }
 
   return (
     <MobileLayout
       style={
-        { '--image-url': `url(${backgroundImage})` } as React.CSSProperties
+        {
+          '--image-url': `url(${backgroundImage})`,
+        } as React.CSSProperties
       }
       className="bg-[image:var(--image-url)]"
     >
