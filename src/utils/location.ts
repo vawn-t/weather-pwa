@@ -11,13 +11,13 @@ export const checkPermissionStatus = async (): Promise<PermissionStatus> => {
       const result = await navigator.permissions.query({
         name: 'geolocation',
       });
-      return result.state as PermissionStatus;
+      return result.state;
     } catch (e) {
       console.warn('Permissions API not fully supported', e);
+      return 'unknown';
     }
   }
 
-  // Fallback: Check if we have a cached location as an indication of permission
   return location ? 'granted' : 'prompt';
 };
 
