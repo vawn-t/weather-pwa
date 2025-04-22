@@ -17,7 +17,7 @@ This document outlines the estimation plan for implementation of Progressive Web
 - [React Router](https://reactrouter.com/home#react-router-home)(v7.5.0): React Router is a multi-strategy router for React bridging the gap
 - [Vite PWA](https://vite-pwa-org.netlify.app)(v0.21.1): PWA integrations for Vite and the ecosystem
 - [Tailwind CSS](http://tailwindcss.com)(v4.1.3): Rapidly build modern websites without ever leaving your HTML
-- Open-Meteo Weather API: Open-Meteo is an open-source weather API and offers free access for non-commercial use. No API key required.
+- [Open-Meteo Weather API](https://open-meteo.com/): Open-Meteo is an open-source weather API and offers free access for non-commercial use. No API key required.
 
 ## APPROACHES
 
@@ -84,7 +84,7 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository
 
 ```shell
-git clone <repository-url>
+git clone git@github.com:vantran-agilityio/weather-forecast.git
 cd pwa-training
 ```
 
@@ -97,8 +97,7 @@ pnpm install
 3. Set up environment variables
    Create a `.env` file in the root directory with the following content:
 
-```shell
-cat > .env << 'EOF'
+```
 VITE_OPENWEATHER_API_KEY=f593f86e24c321b810290a90d06930db
 VITE_METEO_API_URL='https://api.open-meteo.com/v1'
 VITE_OPENWEATHER_API_URL='https://api.openweathermap.org/data/2.5'
