@@ -28,7 +28,6 @@ const PullToRefresh = ({
   const containerScrollTop = useRef<number>(0);
 
   useEffect(() => {
-    // Reset after refreshing completes
     if (isRefreshing) {
       const timer = setTimeout(() => {
         setPullDistance(0);

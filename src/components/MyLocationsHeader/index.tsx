@@ -4,18 +4,18 @@ import { Button, Text } from '../commons';
 
 interface MyLocationsHeaderProps {
   onOpenModal: () => void;
+  onGoBack: () => void;
 }
 
-const MyLocationsHeader = ({ onOpenModal }: MyLocationsHeaderProps) => {
-  const handleGoBack = () => {
-    window.history.back();
-  };
-
+const MyLocationsHeader = ({
+  onOpenModal,
+  onGoBack,
+}: MyLocationsHeaderProps) => {
   return (
     <div className="relative z-10 flex justify-between items-center pt-4">
       <div className="flex items-center">
         <svg
-          onClick={handleGoBack}
+          onClick={onGoBack}
           className="mr-2 w-8 h-8 cursor-pointer"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

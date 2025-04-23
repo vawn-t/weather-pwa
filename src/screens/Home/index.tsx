@@ -111,7 +111,7 @@ const Home = () => {
       <PullToRefresh onRefresh={handleRefresh}>
         <HomeHeader location={locationName} />
         <CurrentWeather data={weather} lastUpdated={lastUpdated} />
-        <ForecastSection data={forecast} />
+        <ForecastSection data={forecast} />/
       </PullToRefresh>
     </MobileLayout>
   );

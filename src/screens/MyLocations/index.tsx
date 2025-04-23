@@ -6,6 +6,7 @@ import {
   LocationCard,
   MyLocationsHeader,
   SearchModal,
+  SwipeNavigation,
   Text,
 } from '@components';
 
@@ -23,6 +24,7 @@ import { COLORS } from '@constants';
 
 // Stores
 import { getLocations, addLocation, deleteLocation } from '@stores';
+import { useNavigate } from 'react-router';
 
 const MyLocations = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -30,6 +32,7 @@ const MyLocations = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const { asyncFetchWeather } = useWeather(null);
+  const navigate = useNavigate();
 
   // Load saved locations from IndexedDB on component mount
   useEffect(() => {
@@ -111,35 +114,41 @@ const MyLocations = () => {
     }
   }, []);
 
+  const handleGoBack = useCallback(() => {
+    navigate(-1);
+  }, []);
+
   return (
     <MobileLayout className={classNames('gap-6', COLORS.GRADIENT)}>
-      <MyLocationsHeader onOpenModal={openModal} />
+      <SwipeNavigation onGoBack={handleGoBack}>
+        <MyLocationsHeader onOpenModal={openModal} onGoBack={handleGoBack} />
 
-      <div className="flex-grow overflow-y-auto">
-        {isLoading ? (
-          <Text className="text-white text-center py-8">
-            Loading saved locations...
-          </Text>
-        ) : locations.length > 0 ? (
-          locations.map((loc) => (
-            <LocationCard
-              id={loc.id}
-              key={loc.id}
-              city={loc.name}
-              condition={loc.weather[0].main}
-              humidity={loc.main.humidity}
-              wind={loc.wind.speed}
-              icon={loc.weather[0].icon}
-              temperature={loc.main.temp}
-              onDelete={handleDeleteLocation}
-            />
-          ))
-        ) : (
-          <Text className="text-white text-center py-8">
-            No saved locations. Add a location to get started.
-          </Text>
-        )}
-      </div>
+        <div className="flex-grow overflow-y-auto">
+          {isLoading ? (
+            <Text className="text-white text-center py-8">
+              Loading saved locations...
+            </Text>
+          ) : locations.length > 0 ? (
+            locations.map((loc) => (
+              <LocationCard
+                id={loc.id}
+                key={loc.id}
+                city={loc.name}
+                condition={loc.weather[0].main}
+                humidity={loc.main.humidity}
+                wind={loc.wind.speed}
+                icon={loc.weather[0].icon}
+                temperature={loc.main.temp}
+                onDelete={handleDeleteLocation}
+              />
+            ))
+          ) : (
+            <Text className="text-white text-center py-8">
+              No saved locations. Add a location to get started.
+            </Text>
+          )}
+        </div>
+      </SwipeNavigation>
 
       <SearchModal
         isOpen={isModalOpen}

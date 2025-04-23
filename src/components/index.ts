@@ -9,3 +9,4 @@ export { default as LocationCard } from './LocationCard';
 export { default as PermissionGate } from './PermissionGate';
 export { default as LoadingIndicator } from './LoadingIndicator';
 export { default as PullToRefresh } from './PullToRefresh';
+export { default as SwipeNavigation } from './SwipeNavigation';
