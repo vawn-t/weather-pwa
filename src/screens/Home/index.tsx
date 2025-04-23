@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useCallback } from 'react';
 
 // Layouts
 import { MobileLayout } from '@layouts';
@@ -10,6 +10,7 @@ import {
   HomeHeader,
   LoadingIndicator,
   PermissionGate,
+  PullToRefresh,
 } from '@components';
 
 // Hooks
@@ -26,9 +27,14 @@ const Home = () => {
     forecast,
     weather,
     lastUpdated,
+    fetchWeatherForCurrentLocation,
+    fetchForecast,
   } = useWeather(location);
-  const { loading: bgLoading, backgroundImage } =
-    useBackgroundImage(locationName);
+  const {
+    loading: bgLoading,
+    backgroundImage,
+    refreshBackground,
+  } = useBackgroundImage(locationName);
 
   // Handle notification setup when weather data is available
   useEffect(() => {
@@ -60,6 +66,29 @@ const Home = () => {
     }
   }, [weatherLoading, bgLoading, forecast, locationName]);
 
+  // Handle pull to refresh
+  const handleRefresh = useCallback(async () => {
+    if (!location) return;
+
+    // A small delay to improve UX
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Refresh weather data
+    await fetchWeatherForCurrentLocation();
+    await fetchForecast();
+
+    // Also refresh the background image
+    if (locationName) {
+      await refreshBackground(locationName);
+    }
+  }, [
+    location,
+    fetchWeatherForCurrentLocation,
+    fetchForecast,
+    locationName,
+    refreshBackground,
+  ]);
+
   // Show loading state
   if (weatherLoading || bgLoading) {
     return <LoadingIndicator />;
@@ -79,9 +108,11 @@ const Home = () => {
       }
       className="bg-[image:var(--image-url)]"
     >
-      <HomeHeader location={locationName} />
-      <CurrentWeather data={weather} lastUpdated={lastUpdated} />
-      <ForecastSection data={forecast} />
+      <PullToRefresh onRefresh={handleRefresh}>
+        <HomeHeader location={locationName} />
+        <CurrentWeather data={weather} lastUpdated={lastUpdated} />
+        <ForecastSection data={forecast} />
+      </PullToRefresh>
     </MobileLayout>
   );
 };

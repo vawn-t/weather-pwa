@@ -19,4 +19,8 @@
 
 html {
   min-height: calc(100% + env(safe-area-inset-top));
+
+  /* Disable pull-to-refresh */
+  overflow: hidden;
+  overscroll-behavior: none;
 }
