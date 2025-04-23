@@ -8,9 +8,9 @@ import {
   CurrentWeather,
   ForecastSection,
   HomeHeader,
-  LoadingIndicator,
   PermissionGate,
   PullToRefresh,
+  SkeletonWeather,
 } from '@components';
 
 // Hooks
@@ -91,7 +91,14 @@ const Home = () => {
 
   // Show loading state
   if (weatherLoading || bgLoading) {
-    return <LoadingIndicator />;
+    return (
+      <MobileLayout className="bg-gradient-to-br from-blue-900 to-indigo-900">
+        <div className="px-4 py-8">
+          <HomeHeader location="Loading..." />
+          <SkeletonWeather className="mt-6" />
+        </div>
+      </MobileLayout>
+    );
   }
 
   // Show permission gate if location permission not granted

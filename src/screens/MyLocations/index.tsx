@@ -8,6 +8,7 @@ import {
   SearchModal,
   SwipeNavigation,
   Text,
+  SkeletonCard,
 } from '@components';
 
 // Layouts
@@ -116,7 +117,7 @@ const MyLocations = () => {
 
   const handleGoBack = useCallback(() => {
     navigate(-1);
-  }, []);
+  }, [navigate]);
 
   return (
     <MobileLayout className={classNames('gap-6', COLORS.GRADIENT)}>
@@ -125,9 +126,11 @@ const MyLocations = () => {
 
         <div className="flex-grow overflow-y-auto">
           {isLoading ? (
-            <Text className="text-white text-center py-8">
-              Loading saved locations...
-            </Text>
+            <div className="p-2">
+              <SkeletonCard />
+              <SkeletonCard />
+              <SkeletonCard />
+            </div>
           ) : locations.length > 0 ? (
             locations.map((loc) => (
               <LocationCard

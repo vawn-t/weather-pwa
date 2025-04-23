@@ -2,6 +2,7 @@ import { useState, useEffect, useRef, ChangeEvent, memo } from 'react';
 
 // Components
 import { Button, Input, Text } from '../commons';
+import { SkeletonSearchResult } from '@components';
 
 // Models
 import { OpenWeatherMapLocation } from '@models';
@@ -123,11 +124,7 @@ const SearchModal = ({ isOpen, onClose, onAddLocation }: SearchModalProps) => {
         />
 
         <div className="mt-4 max-h-60 overflow-y-auto pr-2">
-          {isLoading && (
-            <Text variant="secondary" className="text-center py-2">
-              Searching...
-            </Text>
-          )}
+          {isLoading && <SkeletonSearchResult count={3} />}
           {!isLoading && searchQuery.length > 1 && results.length === 0 && (
             <Text className="text-center py-2">No results found.</Text>
           )}
