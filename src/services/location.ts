@@ -1,5 +1,6 @@
 import { API_ROUTES } from '@constants';
 import { OpenWeatherMapLocation } from '@models';
+import { addCacheBuster } from '@utils';
 
 /**
  * Search for locations by name using OpenWeatherMap API
@@ -12,7 +13,11 @@ export const searchLocation = async (
   limit: number = 5
 ): Promise<OpenWeatherMapLocation[]> => {
   try {
-    const response = await fetch(API_ROUTES.LOCATION_BY_TEXT(limit, query));
+    const url = API_ROUTES.LOCATION_BY_TEXT(limit, query);
+    // Add cache busting parameter to API URL
+    const cachedUrl = addCacheBuster(url);
+
+    const response = await fetch(cachedUrl);
 
     if (!response.ok) {
       throw new Error(`Error searching location: ${response.status}`);

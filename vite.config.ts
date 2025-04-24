@@ -2,18 +2,27 @@ import path from 'path';
 import { VitePWA } from 'vite-plugin-pwa';
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-// import basicSsl from '@vitejs/plugin-basic-ssl';
+import basicSsl from '@vitejs/plugin-basic-ssl';
 import tailwindcss from '@tailwindcss/vite';
+
+const A_MONTH = 2592000;
+const A_DAY = 86400;
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     react(),
-    // basicSsl(),
+    basicSsl(),
     tailwindcss(),
 
     VitePWA({
       registerType: 'autoUpdate',
+
+      // Add a unique revision to each file
+      useCredentials: true,
+
+      // Increase frequency of SW updates check
+      injectRegister: 'script',
 
       includeAssets: ['**/*'],
 
@@ -23,7 +32,7 @@ export default defineConfig({
         description: 'This is the weather forecast app.',
         screenshots: [
           {
-            src: 'screenshots/screenshot-1.webp',
+            src: 'screenshots/screenshot-1.png',
             sizes: '1080x2340',
             type: 'image/webp',
             platform: 'ios',
@@ -78,18 +87,26 @@ export default defineConfig({
         clientsClaim: true,
         skipWaiting: true,
 
+        // Add cache name with version
+        cacheId: 'weather-pwa-cache',
+
+        // Don't cache based on response headers
+        ignoreURLParametersMatching: [/^utm_/, /^fbclid$/, /^v=/],
+
+        maximumFileSizeToCacheInBytes: 5 * 1024 * 1024, // 5MB
+
         // Custom runtime caching strategies
         runtimeCaching: [
           {
             // Cache weather API responses (adjust the pattern to match your actual API)
             urlPattern:
               /^(https:\/\/api\.open-meteo\.com\/v1\/forecast|http:\/\/api\.openweathermap\.org\/geo\/1\.0\/direct)$/i,
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'weather-api-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 86400, // 24 hours stale cache
+                maxAgeSeconds: A_DAY, // 24 hours stale cache
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -105,7 +122,7 @@ export default defineConfig({
               cacheName: 'static-assets-cache',
               expiration: {
                 maxEntries: 100,
-                maxAgeSeconds: 2592000, // 30 days
+                maxAgeSeconds: A_MONTH, // 30 days
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -120,7 +137,7 @@ export default defineConfig({
             options: {
               cacheName: 'app-shell-cache',
               expiration: {
-                maxAgeSeconds: 86400, // 24 hours
+                maxAgeSeconds: A_DAY, // 24 hours
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -129,14 +146,14 @@ export default defineConfig({
           },
 
           {
-            // Cache CSS/JS with a stale-while-revalidate strategy
+            // Cache CSS/JS with a network-first strategy
             urlPattern: /\.(?:js|css)$/i,
-            handler: 'StaleWhileRevalidate',
+            handler: 'NetworkFirst',
             options: {
               cacheName: 'static-resources-cache',
               expiration: {
                 maxEntries: 50,
-                maxAgeSeconds: 86400, // 24 hours
+                maxAgeSeconds: A_DAY, // 24 hours
               },
               cacheableResponse: {
                 statuses: [0, 200],
@@ -168,5 +185,19 @@ export default defineConfig({
       '@stores': path.resolve(__dirname, './src/stores'),
       '@assets': path.resolve(__dirname, './src/assets'),
     },
+  },
+
+  // Add build configuration for cache busting
+  build: {
+    rollupOptions: {
+      output: {
+        // Use content hash for cache busting
+        entryFileNames: 'assets/[name].[hash].js',
+        chunkFileNames: 'assets/[name].[hash].js',
+        assetFileNames: 'assets/[name].[hash].[ext]',
+      },
+    },
+    // Generate manifest file for asset mapping
+    manifest: true,
   },
 });

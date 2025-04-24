@@ -14,3 +14,5 @@ export { default as Skeleton } from './Skeleton';
 export { default as SkeletonCard } from './Skeleton/SkeletonCard';
 export { default as SkeletonSearchResult } from './Skeleton/SkeletonSearchResult';
 export { default as SkeletonWeather } from './Skeleton/SkeletonWeather';
+export { default as AppUpdate } from './AppUpdate';
+export { default as NetworkStatus } from './NetworkStatus/NetworkStatus';

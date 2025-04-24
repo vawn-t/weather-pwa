@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import classNames from 'classnames';
+import { AppUpdate } from '@components';
 
 interface MobileLayoutProps extends React.HTMLProps<HTMLElement> {
   children: ReactNode;
@@ -14,6 +15,9 @@ const MobileLayout = ({ children, className, ...rest }: MobileLayoutProps) => {
       )}
       {...rest}
     >
+      <div className="absolute top-4 right-4 z-50">
+        <AppUpdate />
+      </div>
       {children}
     </main>
   );

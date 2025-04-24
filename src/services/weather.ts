@@ -1,5 +1,6 @@
 import { API_ROUTES } from '@constants';
 import { OpenWeatherMap, OpenWeatherMapForecast } from '@models';
+import { addCacheBuster } from '@utils';
 
 /**
  * Get weather for a specific location by coordinates using OpenWeatherMap API
@@ -13,9 +14,11 @@ export const getOpenWeatherMapByCoordinates = async (
   lon: number,
   units: 'standard' | 'metric' | 'imperial' = 'metric'
 ): Promise<OpenWeatherMap> => {
-  const response = await fetch(
-    API_ROUTES.WEATHER_BY_COORDINATES(lat, lon, units)
-  );
+  const url = API_ROUTES.WEATHER_BY_COORDINATES(lat, lon, units);
+  // Add cache busting parameter to API URL
+  const cachedUrl = addCacheBuster(url);
+
+  const response = await fetch(cachedUrl);
 
   if (!response.ok) {
     const error = new Error(
@@ -40,9 +43,11 @@ export const getForecastByCoordinates = async (
   lon: number,
   units: 'standard' | 'metric' | 'imperial' = 'metric'
 ): Promise<OpenWeatherMapForecast> => {
-  const response = await fetch(
-    API_ROUTES.FORECAST_BY_COORDINATES(lat, lon, units)
-  );
+  const url = API_ROUTES.FORECAST_BY_COORDINATES(lat, lon, units);
+  // Add cache busting parameter to API URL
+  const cachedUrl = addCacheBuster(url);
+
+  const response = await fetch(cachedUrl);
 
   if (!response.ok) {
     const error = new Error(
