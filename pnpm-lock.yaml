@@ -18,9 +18,6 @@ importers:
       classnames:
         specifier: ^2.5.1
         version: 2.5.1
-      idb:
-        specifier: ^8.0.2
-        version: 8.0.2
       react:
         specifier: ^19.0.0
         version: 19.1.0
@@ -1756,9 +1753,6 @@ packages:
 
   idb@7.1.1:
     resolution: {integrity: sha512-gchesWBzyvGHRO9W8tzUWFDycow5gwjvFKfyV9FF32Y7F50yZMp7mP+T2mJIWFx49zicqyC4uefHM17o6xKIVQ==}
-
-  idb@8.0.2:
-    resolution: {integrity: sha512-CX70rYhx7GDDQzwwQMDwF6kDRQi5vVs6khHUumDrMecBylKkwvZ8HWvKV08AGb7VbpoGCWUQ4aHzNDgoUiOIUg==}
 
   ieee754@1.2.1:
     resolution: {integrity: sha512-dcyqhDvX1C46lXZcVqCpK+FtMRQVdIMN6/Df5js2zouUsqG7I6sFxitIC+7KYK29KdXOLHdu9zL4sFnoVQnqaA==}
@@ -4586,8 +4580,6 @@ snapshots:
   ico-endec@0.1.6: {}
 
   idb@7.1.1: {}
-
-  idb@8.0.2: {}
 
   ieee754@1.2.1: {}
 

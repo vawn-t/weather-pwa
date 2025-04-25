@@ -1,8 +1,3 @@
-// App version for cache busting
-const APP_VERSION = '1.0.0';
-// This value should match the version in src/constants/version.ts
-// We can't import directly since this runs in the service worker context
-
 // Listen for push events
 self.addEventListener('push', (event) => {
   if (!event.data) return;
@@ -69,21 +64,4 @@ self.addEventListener('notificationclick', (event) => {
     });
 
   event.waitUntil(promiseChain);
-});
-
-// Force cache refresh when version changes
-self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          // If this cache doesn't include our version, delete it
-          if (!cacheName.includes(APP_VERSION)) {
-            console.log('Deleting outdated cache:', cacheName);
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
-  );
 });
