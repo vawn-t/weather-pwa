@@ -104,6 +104,5 @@ export const workboxConfig: Partial<GenerateSWOptions> = {
     },
   ],
 
-  // Add importScripts to include our custom background sync implementation
-  importScripts: ['js/sw-notifications.js', 'js/sw-background-sync.js'],
+  importScripts: ['js/sw-notifications.js'],
 };
