@@ -1,8 +1,14 @@
-import { CACHE_NAMES } from '@constants';
 import { GenerateSWOptions } from 'workbox-build';
 
 const A_MONTH = 2592000;
 const A_DAY = 86400;
+const CACHE_NAMES = {
+  WEATHER_API: 'weather-api-cache',
+  SEARCH_WEATHER_API: 'search-weather-api-cache',
+  STATIC_ASSETS: 'static-assets-cache',
+  APP_SHELL: 'app-shell-cache',
+  STATIC_RESOURCES: 'static-resources-cache',
+};
 
 export const workboxConfig: Partial<GenerateSWOptions> = {
   globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff,eot,ttf,ico}'],
