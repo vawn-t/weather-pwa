@@ -1,4 +1,4 @@
-import { CACHE_NAMES } from 'src/constants/cache';
+import { CACHE_NAMES } from '@constants';
 import { GenerateSWOptions } from 'workbox-build';
 
 const A_MONTH = 2592000;
