@@ -1,61 +1,8 @@
-import type { ManifestOptions } from 'vite-plugin-pwa';
-import type { GenerateSWOptions } from 'node_modules/.pnpm/workbox-build@7.3.0_@types+babel__core@7.20.5/node_modules/workbox-build/build/types.d.ts';
+import { CACHE_NAMES } from 'src/constants/cache';
+import { GenerateSWOptions } from 'workbox-build';
 
 const A_MONTH = 2592000;
 const A_DAY = 86400;
-
-export const manifestConfig: Partial<ManifestOptions> = {
-  name: 'Weather',
-  short_name: 'Weather',
-  description: 'This is the weather forecast app.',
-  screenshots: [
-    {
-      src: 'screenshots/screenshot-1.png',
-      sizes: '1290x2796',
-      type: 'image/webp',
-      platform: 'ios',
-      label: 'Weather forecast for the week',
-    },
-    {
-      src: 'screenshots/screenshot-2.webp',
-      sizes: '1542x1294',
-      type: 'image/webp',
-      form_factor: 'wide',
-      label: 'Weather forecast for the week',
-    },
-  ],
-  icons: [
-    {
-      src: 'pwa-64x64.png',
-      sizes: '64x64',
-      type: 'image/png',
-    },
-    {
-      src: 'pwa-192x192.png',
-      sizes: '192x192',
-      type: 'image/png',
-    },
-    {
-      src: 'pwa-512x512.png',
-      sizes: '512x512',
-      type: 'image/png',
-    },
-    {
-      src: 'maskable-icon-512x512.png',
-      sizes: '512x512',
-      type: 'image/png',
-      purpose: 'maskable',
-    },
-  ],
-
-  display: 'standalone',
-  orientation: 'portrait',
-  lang: 'en',
-  scope: '/',
-  start_url: '/',
-  background_color: '#391A49',
-  theme_color: '#391A49',
-};
 
 export const workboxConfig: Partial<GenerateSWOptions> = {
   globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff,eot,ttf,ico}'],
@@ -75,11 +22,10 @@ export const workboxConfig: Partial<GenerateSWOptions> = {
   runtimeCaching: [
     {
       // Cache weather API responses (adjust the pattern to match your actual API)
-      urlPattern:
-        /^(https:\/\/api\.open-meteo\.com\/v1\/forecast|http:\/\/api\.openweathermap\.org\/geo\/1\.0\/direct)$/i,
-      handler: 'StaleWhileRevalidate',
+      urlPattern: /^https:\/\/api\.open-meteo\.org\.geo\/1.0\/direct$/i,
+      handler: 'NetworkFirst',
       options: {
-        cacheName: 'weather-api-cache',
+        cacheName: CACHE_NAMES.WEATHER_API,
         expiration: {
           maxEntries: 50,
           maxAgeSeconds: A_DAY, // 24 hours stale cache
@@ -91,11 +37,33 @@ export const workboxConfig: Partial<GenerateSWOptions> = {
     },
 
     {
+      // Cache search weather API responses
+      urlPattern: 'https://api.openweathermap.org/geo/1.0/direct',
+      handler: 'NetworkFirst',
+      options: {
+        cacheName: CACHE_NAMES.SEARCH_WEATHER_API,
+        expiration: {
+          maxEntries: 50,
+          maxAgeSeconds: A_DAY,
+        },
+        cacheableResponse: {
+          statuses: [0, 200],
+        },
+        backgroundSync: {
+          name: 'sync-weather-data',
+          options: {
+            maxRetentionTime: 24 * 60, // Retry for 24 hours
+          },
+        },
+      },
+    },
+
+    {
       // Cache static assets with a Cache First strategy
       urlPattern: /\.(?:png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot|ico)$/i,
       handler: 'CacheFirst',
       options: {
-        cacheName: 'static-assets-cache',
+        cacheName: CACHE_NAMES.STATIC_ASSETS,
         expiration: {
           maxEntries: 100,
           maxAgeSeconds: A_MONTH, // 30 days
@@ -111,13 +79,11 @@ export const workboxConfig: Partial<GenerateSWOptions> = {
       urlPattern: /\/(index\.html)?$/,
       handler: 'NetworkFirst',
       options: {
-        cacheName: 'app-shell-cache',
+        cacheName: CACHE_NAMES.APP_SHELL,
         expiration: {
           maxAgeSeconds: A_DAY, // 24 hours
         },
-        cacheableResponse: {
-          statuses: [0, 200],
-        },
+        cacheableResponse: {},
       },
     },
 
@@ -126,7 +92,7 @@ export const workboxConfig: Partial<GenerateSWOptions> = {
       urlPattern: /\.(?:js|css)$/i,
       handler: 'NetworkFirst',
       options: {
-        cacheName: 'static-resources-cache',
+        cacheName: CACHE_NAMES.STATIC_RESOURCES,
         expiration: {
           maxEntries: 50,
           maxAgeSeconds: A_DAY, // 24 hours
@@ -138,5 +104,6 @@ export const workboxConfig: Partial<GenerateSWOptions> = {
     },
   ],
 
-  importScripts: ['js/sw-notifications.js'],
+  // Add importScripts to include our custom background sync implementation
+  importScripts: ['js/sw-notifications.js', 'js/sw-background-sync.js'],
 };
