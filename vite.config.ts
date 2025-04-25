@@ -4,7 +4,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 // import basicSsl from '@vitejs/plugin-basic-ssl';
 import tailwindcss from '@tailwindcss/vite';
-import { MANIFEST_CONFIG, WORKBOX_CONFIG } from './src/configs';
+import { manifestConfig, workboxConfig } from './src/configs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -18,9 +18,9 @@ export default defineConfig({
 
       includeAssets: ['**/*'],
 
-      manifest: MANIFEST_CONFIG,
+      manifest: manifestConfig,
 
-      workbox: WORKBOX_CONFIG,
+      workbox: workboxConfig,
 
       devOptions: {
         enabled: true,

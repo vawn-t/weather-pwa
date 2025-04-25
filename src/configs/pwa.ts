@@ -1,18 +1,17 @@
 import type { ManifestOptions } from 'vite-plugin-pwa';
-// import type { GenerateSWOptions } from 'vite-plugin-pwa';
 import type { GenerateSWOptions } from 'node_modules/.pnpm/workbox-build@7.3.0_@types+babel__core@7.20.5/node_modules/workbox-build/build/types.d.ts';
 
 const A_MONTH = 2592000;
 const A_DAY = 86400;
 
-export const MANIFEST_CONFIG: Partial<ManifestOptions> = {
+export const manifestConfig: Partial<ManifestOptions> = {
   name: 'Weather',
   short_name: 'Weather',
   description: 'This is the weather forecast app.',
   screenshots: [
     {
       src: 'screenshots/screenshot-1.png',
-      sizes: '1080x2340',
+      sizes: '1290x2796',
       type: 'image/webp',
       platform: 'ios',
       label: 'Weather forecast for the week',
@@ -58,7 +57,7 @@ export const MANIFEST_CONFIG: Partial<ManifestOptions> = {
   theme_color: '#391A49',
 };
 
-export const WORKBOX_CONFIG: Partial<GenerateSWOptions> = {
+export const workboxConfig: Partial<GenerateSWOptions> = {
   globPatterns: ['**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff,eot,ttf,ico}'],
   cleanupOutdatedCaches: true,
   clientsClaim: true,
@@ -78,7 +77,7 @@ export const WORKBOX_CONFIG: Partial<GenerateSWOptions> = {
       // Cache weather API responses (adjust the pattern to match your actual API)
       urlPattern:
         /^(https:\/\/api\.open-meteo\.com\/v1\/forecast|http:\/\/api\.openweathermap\.org\/geo\/1\.0\/direct)$/i,
-      handler: 'NetworkFirst',
+      handler: 'StaleWhileRevalidate',
       options: {
         cacheName: 'weather-api-cache',
         expiration: {
