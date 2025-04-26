@@ -28,6 +28,8 @@ interface UseWeatherResult {
   asyncFetchWeather: (
     location: LocationState
   ) => Promise<OpenWeatherMap | undefined>;
+  fetchWeatherForCurrentLocation: () => Promise<void>;
+  fetchForecast: () => Promise<void>;
 }
 
 /**
@@ -213,5 +215,7 @@ export const useWeather = (
     lastUpdated,
     forecast,
     asyncFetchWeather,
+    fetchWeatherForCurrentLocation,
+    fetchForecast,
   };
 };

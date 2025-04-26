@@ -76,7 +76,7 @@ This document outlines the estimation plan for implementation of Progressive Web
 Before you begin, ensure you have the following installed:
 
 - Node.js (version 18.0.0 or later)
-- PNPM (your project uses PNPM as package manager)
+- PNPM 9.15.5
 - Git
 
 ### Step-by-Step Setup

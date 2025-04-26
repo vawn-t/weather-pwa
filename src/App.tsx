@@ -1,12 +1,15 @@
 import { Route, Routes } from 'react-router';
 import { HomeScreen, MyLocationsScreen } from './screens';
+import { SwipeTransition } from '@layouts';
 
 function App() {
   return (
-    <Routes>
-      <Route path="/" element={<HomeScreen />} />
-      <Route path="/my-locations" element={<MyLocationsScreen />} />
-    </Routes>
+    <SwipeTransition>
+      <Routes>
+        <Route path="/" element={<HomeScreen />} />
+        <Route path="/my-locations" element={<MyLocationsScreen />} />
+      </Routes>
+    </SwipeTransition>
   );
 }
 

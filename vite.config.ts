@@ -4,6 +4,7 @@ import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 // import basicSsl from '@vitejs/plugin-basic-ssl';
 import tailwindcss from '@tailwindcss/vite';
+import { manifestConfig, workboxConfig } from './src/configs';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -17,136 +18,9 @@ export default defineConfig({
 
       includeAssets: ['**/*'],
 
-      manifest: {
-        name: 'Weather',
-        short_name: 'Weather',
-        description: 'This is the weather forecast app.',
-        screenshots: [
-          {
-            src: 'screenshots/screenshot-1.webp',
-            sizes: '1080x2340',
-            type: 'image/webp',
-            platform: 'ios',
-            label: 'Weather forecast for the week',
-          },
-          {
-            src: 'screenshots/screenshot-2.webp',
-            sizes: '1542x1294',
-            type: 'image/webp',
-            form_factor: 'wide',
-            label: 'Weather forecast for the week',
-          },
-        ],
-        icons: [
-          {
-            src: 'pwa-64x64.png',
-            sizes: '64x64',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-192x192.png',
-            sizes: '192x192',
-            type: 'image/png',
-          },
-          {
-            src: 'pwa-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-          },
-          {
-            src: 'maskable-icon-512x512.png',
-            sizes: '512x512',
-            type: 'image/png',
-            purpose: 'maskable',
-          },
-        ],
+      manifest: manifestConfig,
 
-        display: 'standalone',
-        orientation: 'portrait',
-        lang: 'en',
-        scope: '/',
-        start_url: '/',
-        background_color: '#391A49',
-        theme_color: '#391A49',
-      },
-
-      workbox: {
-        globPatterns: [
-          '**/*.{js,css,html,png,jpg,jpeg,svg,woff2,woff,eot,ttf,ico}',
-        ],
-        cleanupOutdatedCaches: true,
-        clientsClaim: true,
-        skipWaiting: true,
-
-        // Custom runtime caching strategies
-        runtimeCaching: [
-          {
-            // Cache weather API responses (adjust the pattern to match your actual API)
-            urlPattern:
-              /^(https:\/\/api\.open-meteo\.com\/v1\/forecast|http:\/\/api\.openweathermap\.org\/geo\/1\.0\/direct)$/i,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'weather-api-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 86400, // 24 hours stale cache
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-
-          {
-            // Cache static assets with a Cache First strategy
-            urlPattern: /\.(?:png|jpg|jpeg|svg|gif|woff|woff2|ttf|eot|ico)$/i,
-            handler: 'CacheFirst',
-            options: {
-              cacheName: 'static-assets-cache',
-              expiration: {
-                maxEntries: 100,
-                maxAgeSeconds: 2592000, // 30 days
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-
-          {
-            // Cache app shell files
-            urlPattern: /\/(index\.html)?$/,
-            handler: 'NetworkFirst',
-            options: {
-              cacheName: 'app-shell-cache',
-              expiration: {
-                maxAgeSeconds: 86400, // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-
-          {
-            // Cache CSS/JS with a stale-while-revalidate strategy
-            urlPattern: /\.(?:js|css)$/i,
-            handler: 'StaleWhileRevalidate',
-            options: {
-              cacheName: 'static-resources-cache',
-              expiration: {
-                maxEntries: 50,
-                maxAgeSeconds: 86400, // 24 hours
-              },
-              cacheableResponse: {
-                statuses: [0, 200],
-              },
-            },
-          },
-        ],
-
-        importScripts: ['js/sw-notifications.js'],
-      },
+      workbox: workboxConfig,
 
       devOptions: {
         enabled: true,
