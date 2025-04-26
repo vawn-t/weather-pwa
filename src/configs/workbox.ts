@@ -56,12 +56,6 @@ export const workboxConfig: Partial<GenerateSWOptions> = {
         cacheableResponse: {
           statuses: [0, 200],
         },
-        backgroundSync: {
-          name: 'sync-weather-data',
-          options: {
-            maxRetentionTime: 24 * 60, // Retry for 24 hours
-          },
-        },
       },
     },
 
@@ -111,5 +105,5 @@ export const workboxConfig: Partial<GenerateSWOptions> = {
     },
   ],
 
-  importScripts: ['js/sw-notifications.js'],
+  importScripts: ['js/sw-notifications.js', 'js/sw-background-sync.js'],
 };
