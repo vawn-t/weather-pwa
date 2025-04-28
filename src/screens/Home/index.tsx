@@ -10,7 +10,6 @@ import {
   HomeHeader,
   PermissionGate,
   PullToRefresh,
-  SkeletonWeather,
 } from '@components';
 
 // Hooks
@@ -89,18 +88,6 @@ const Home = () => {
     refreshBackground,
   ]);
 
-  // Show loading state
-  if (weatherLoading || bgLoading) {
-    return (
-      <MobileLayout className="bg-gradient-to-br from-blue-900 to-indigo-900">
-        <div className="px-4 py-8">
-          <HomeHeader location="Loading..." />
-          <SkeletonWeather className="mt-6" />
-        </div>
-      </MobileLayout>
-    );
-  }
-
   // Show permission gate if location permission not granted
   if (permissionStatus !== 'granted' && permissionStatus !== 'prompt') {
     return <PermissionGate />;
@@ -110,15 +97,19 @@ const Home = () => {
     <MobileLayout
       style={
         {
-          '--image-url': `url(${backgroundImage})`,
+          '--image-url': `url(${backgroundImage || '/default-bg.jpg'})`,
         } as React.CSSProperties
       }
       className="bg-[image:var(--image-url)]"
     >
       <PullToRefresh onRefresh={handleRefresh}>
-        <HomeHeader location={locationName} />
-        <CurrentWeather data={weather} lastUpdated={lastUpdated} />
-        <ForecastSection data={forecast} />/
+        <HomeHeader location={locationName} isLoading={weatherLoading} />
+        <CurrentWeather
+          data={weather}
+          lastUpdated={lastUpdated}
+          isLoading={weatherLoading}
+        />
+        <ForecastSection data={forecast} isLoading={weatherLoading} />
       </PullToRefresh>
     </MobileLayout>
   );

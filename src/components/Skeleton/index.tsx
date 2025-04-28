@@ -1,16 +1,10 @@
 import classNames from 'classnames';
 
 interface SkeletonProps extends React.HTMLAttributes<HTMLDivElement> {
-  width?: string;
-  height?: string;
-  borderRadius?: string;
   animation?: 'pulse' | 'shimmer' | 'none';
 }
 
 const Skeleton: React.FC<SkeletonProps> = ({
-  width = '100%',
-  height = '1rem',
-  borderRadius = '4px',
   className = '',
   animation = 'pulse',
 }) => {
@@ -22,16 +16,11 @@ const Skeleton: React.FC<SkeletonProps> = ({
   return (
     <div
       className={classNames(
-        'bg-gray-300/30 dark:bg-gray-700/30',
+        'bg-gray-300/30 dark:bg-gray-700/30 w-full h-4 rounded-2xl',
         animationClasses,
         className
       )}
-      style={{
-        width,
-        height,
-        borderRadius,
-      }}
-    ></div>
+    />
   );
 };
 

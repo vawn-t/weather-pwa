@@ -13,4 +13,4 @@ export { default as SwipeNavigation } from './SwipeNavigation';
 export { default as Skeleton } from './Skeleton';
 export { default as SkeletonCard } from './Skeleton/SkeletonCard';
 export { default as SkeletonSearchResult } from './Skeleton/SkeletonSearchResult';
-export { default as SkeletonWeather } from './Skeleton/SkeletonWeather';
+export { default as SkeletonForecast } from './Skeleton/SkeletonForecast';

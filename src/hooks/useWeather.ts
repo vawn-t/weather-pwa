@@ -58,11 +58,11 @@ export const useWeather = (
   }, []);
 
   useEffect(() => {
-    if (location && autoFetch) {
+    if (!weather.id && location && autoFetch) {
       fetchWeatherForCurrentLocation();
       fetchForecast();
     }
-  }, [location]);
+  }, [location, weather.id]);
 
   // Load weather data from IndexedDB
   const loadWeatherFromIndexedDB = async () => {

@@ -6,12 +6,13 @@ import LocationDisplay from './LocationDisplay';
 
 interface HeaderProps {
   location: string;
+  isLoading?: boolean;
 }
 
-const HomeHeader = ({ location }: HeaderProps) => {
+const HomeHeader = ({ location, isLoading = false }: HeaderProps) => {
   return (
     <div className="relative z-10 flex justify-between items-center pt-4">
-      <LocationDisplay location={location} />
+      <LocationDisplay location={location} isLoading={isLoading} />
 
       <NavLink to="/my-locations" end>
         <MenuIcon />

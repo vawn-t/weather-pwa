@@ -18,9 +18,14 @@ export type WeatherDetail = {
 interface CurrentWeatherProps {
   data: OpenWeatherMap;
   lastUpdated: string;
+  isLoading?: boolean;
 }
 
-const CurrentWeather = ({ data, lastUpdated }: CurrentWeatherProps) => {
+const CurrentWeather = ({
+  data,
+  lastUpdated,
+  isLoading = false,
+}: CurrentWeatherProps) => {
   const {
     main: { humidity, feels_like, temp },
     wind,
@@ -50,13 +55,14 @@ const CurrentWeather = ({ data, lastUpdated }: CurrentWeatherProps) => {
 
   return (
     <>
-      <DateDisplay date={lastUpdated} />
+      <DateDisplay date={lastUpdated} isLoading={isLoading} />
       <WeatherDescription
+        isLoading={isLoading}
         condition={weather[0].main}
         iconCode={weather[0].icon}
         temp={temp}
       />
-      <WeatherDetails data={detailData} />
+      <WeatherDetails data={detailData} isLoading={isLoading} />
     </>
   );
 };

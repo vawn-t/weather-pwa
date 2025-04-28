@@ -42,7 +42,6 @@ export const getOpenWeatherMapByCoordinates = async (
             mode: 'cors',
           });
 
-          // Use our background sync function in the service worker
           if (registration.active && registration.active.postMessage) {
             registration.active.postMessage({
               type: 'SYNC_WEATHER',
