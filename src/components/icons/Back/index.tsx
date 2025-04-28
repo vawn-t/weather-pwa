@@ -1,5 +1,18 @@
-import BackIconBase from '@assets/weather-icons/chevron-left-icon.png';
-
-const BackIcon = () => <img src={BackIconBase} alt="BackIcon" />;
+const BackIcon = () => (
+  <svg
+    className="mr-2 w-8 h-8"
+    xmlns="http://www.w3.org/2000/svg"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
+  >
+    <path
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      strokeWidth={2}
+      d="M15 19l-7-7 7-7"
+    />
+  </svg>
+);
 
 export default BackIcon;
