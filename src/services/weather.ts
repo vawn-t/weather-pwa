@@ -1,4 +1,4 @@
-import { SYNC_KEY, API_ROUTES, CACHE_KEY } from '@constants';
+import { SYNC_KEY, API_ROUTES } from '@constants';
 import { OpenWeatherMap, OpenWeatherMapForecast } from '@models';
 
 /**
@@ -26,8 +26,6 @@ export const getOpenWeatherMapByCoordinates = async (
 
     return await response.json();
   } catch (error) {
-    console.error('Error in getOpenWeatherMapByCoordinates:', error);
-
     // Register for background sync if available and we're offline
     if (!navigator.onLine && 'serviceWorker' in navigator) {
       try {
@@ -54,15 +52,6 @@ export const getOpenWeatherMapByCoordinates = async (
           console.log('Registered for weather sync');
         } else {
           console.log('Background Sync not supported');
-        }
-
-        // Try to return cached data
-        const cache = await caches.open(CACHE_KEY.WEATHER_CACHE);
-        const cachedResponse = await cache.match(url);
-
-        if (cachedResponse) {
-          console.log('Returned cached weather data');
-          return cachedResponse.json();
         }
       } catch (syncError) {
         console.error('Failed to register for sync:', syncError);
@@ -127,15 +116,6 @@ export const getForecastByCoordinates = async (
           console.log('Registered for forecast sync');
         } else {
           console.log('Background Sync not supported');
-        }
-
-        // Try to return cached data
-        const cache = await caches.open(SYNC_KEY.FORECAST_SYNC_QUEUE);
-        const cachedResponse = await cache.match(url);
-
-        if (cachedResponse) {
-          console.log('Returned cached forecast data');
-          return cachedResponse.json();
         }
       } catch (syncError) {
         console.error('Failed to register for sync:', syncError);

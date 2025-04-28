@@ -1,5 +1,5 @@
 import {
-  DB_NAME,
+  WEATHER_APP_DB,
   DB_VERSION,
   FORECAST_STORE,
   LOCATIONS_STORE,
@@ -20,7 +20,7 @@ const initDB = async (): Promise<IDBDatabase> => {
   if (db) return db;
 
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, DB_VERSION);
+    const request = indexedDB.open(WEATHER_APP_DB, DB_VERSION);
 
     request.onerror = (event) => {
       console.error('IndexedDB error:', event);
