@@ -24,6 +24,16 @@ html {
   /* Disable pull-to-refresh */
   overflow: hidden;
   overscroll-behavior: none;
+
+  /* Disable select text */
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
+}
+
+img {
+  /* Disable drag image */
+  -webkit-user-drag: none;
 }
 
 /* Custom animations */
