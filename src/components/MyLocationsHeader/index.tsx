@@ -13,10 +13,9 @@ const MyLocationsHeader = ({
 }: MyLocationsHeaderProps) => {
   return (
     <div className="relative z-10 flex justify-between items-center pt-4">
-      <div className="flex items-center">
+      <div className="flex items-center cursor-pointer" onClick={onGoBack}>
         <svg
-          onClick={onGoBack}
-          className="mr-2 w-8 h-8 cursor-pointer"
+          className="mr-2 w-8 h-8"
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
           viewBox="0 0 24 24"
