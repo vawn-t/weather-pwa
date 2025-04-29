@@ -1,21 +1,16 @@
+// APP DATA CACHE
+const WEATHER_APP_DB = 'WEATHER_APP_DB';
+const WEATHER_STORE = 'WEATHER_STORE';
+const FORECAST_STORE = 'FORECAST_STORE';
+
+// QUEUE CACHE
 const WEATHER_QUEUE_DB = 'WEATHER_QUEUE_DB';
 const STORE_NAME = 'WEATHER_QUEUE_STORE';
 
-const WEATHER_APP_DB = 'WEATHER_APP_DB';
-const DB_VERSION = 1;
-
 const WEATHER_SYNC_QUEUE = 'sync-weather-data';
 const FORECAST_SYNC_QUEUE = 'sync-forecast-data';
-const WEATHER_CACHE = 'weather-api-cache';
-const FORECAST_CACHE = 'forecast-api-cache';
 
-const headers = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET',
-  'Access-Control-Allow-Credentials': true,
-  'Content-Type': 'application/json',
-  Accept: 'application/json',
-};
+const DB_VERSION = 1;
 
 // Handle message events for service worker communication
 self.addEventListener('message', (event) => {
@@ -28,7 +23,6 @@ self.addEventListener('message', (event) => {
     // Create a new request object to store for later syncing
     const request = new Request(requestUrl, {
       method: 'GET',
-      headers,
     });
 
     // Store the request for later processing
@@ -44,7 +38,6 @@ self.addEventListener('message', (event) => {
     // Create a new request object to store for later syncing
     const request = new Request(requestUrl, {
       method: 'GET',
-      headers,
     });
 
     // Store the request for later processing
@@ -76,28 +69,22 @@ async function syncWeatherData() {
     // Process each failed request
     const promises = requests.map(async (requestData) => {
       try {
-        // Recreate the request from stored data
-        const request = new Request(requestData.url, {
-          method: requestData.method,
-          headers: new Headers(requestData.headers),
-        });
-
-        const response = await fetch(request);
+        const response = await fetch(requestData.url);
 
         if (response.ok) {
-          // If success, cache the response
-          const cache = await caches.open(WEATHER_CACHE);
-          await cache.put(request, response.clone());
+          const body = await response.json();
 
-          // Store in IndexedDB for app access
-          const data = await response.clone().json();
-          await storeResponseInIndexedDB(WEATHER_CACHE, requestData.url, data);
+          const record = {
+            id: body.id,
+            name: body.name,
+            body,
+          };
 
-          // Optionally notify the user
-          await showWeatherUpdatedNotification();
+          await storeResponseInIndexedDB(WEATHER_STORE, record);
 
           // Remove from queue
           await removeStoredRequest(WEATHER_SYNC_QUEUE, requestData.url);
+
           return true;
         }
         return false;
@@ -122,22 +109,17 @@ async function syncForecastData() {
     // Process each failed request
     const promises = requests.map(async (requestData) => {
       try {
-        // Recreate the request from stored data
-        const request = new Request(requestData.url, {
-          method: requestData.method,
-          headers: new Headers(requestData.headers),
-        });
-
-        const response = await fetch(request);
+        const response = await fetch(requestData.url);
 
         if (response.ok) {
-          // If success, cache the response
-          const cache = await caches.open(FORECAST_CACHE);
-          await cache.put(request, response.clone());
+          const body = await response.json();
+          const record = {
+            id: 0,
+            name: 'forecastName',
+            body,
+          };
 
-          // Store in IndexedDB for app access
-          const data = await response.clone().json();
-          await storeResponseInIndexedDB(FORECAST_CACHE, requestData.url, data);
+          await storeResponseInIndexedDB(FORECAST_STORE, record);
 
           // Remove from queue
           await removeStoredRequest(FORECAST_SYNC_QUEUE, requestData.url);
@@ -156,11 +138,10 @@ async function syncForecastData() {
   }
 }
 
-// Utility function to store API responses in IndexedDB
-async function storeResponseInIndexedDB(storeName, url, data) {
+async function storeResponseInIndexedDB(storeName, record) {
   try {
     return new Promise((resolve, reject) => {
-      const request = indexedDB.open(WEATHER_QUEUE_DB, 1);
+      const request = indexedDB.open(WEATHER_APP_DB, 1);
 
       request.onerror = () => reject(request.error);
 
@@ -176,11 +157,7 @@ async function storeResponseInIndexedDB(storeName, url, data) {
         const transaction = db.transaction(storeName, 'readwrite');
         const store = transaction.objectStore(storeName);
 
-        const storeRequest = store.put({
-          url,
-          data,
-          timestamp: Date.now(),
-        });
+        const storeRequest = store.put({ ...record, timestamp: Date.now() });
 
         storeRequest.onsuccess = () => resolve();
         storeRequest.onerror = () => reject(storeRequest.error);
@@ -192,9 +169,9 @@ async function storeResponseInIndexedDB(storeName, url, data) {
 }
 
 // Utility functions for managing requests in IndexedDB
-async function openDB() {
+async function openDB(dbName, dbVersion) {
   return new Promise((resolve, reject) => {
-    const request = indexedDB.open(WEATHER_QUEUE_DB, 1);
+    const request = indexedDB.open(dbName, dbVersion);
 
     request.onerror = () => reject(request.error);
 
@@ -212,7 +189,7 @@ async function openDB() {
 
 async function getStoredRequests(queueName) {
   try {
-    const db = await openDB();
+    const db = await openDB(WEATHER_QUEUE_DB, DB_VERSION);
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE_NAME, 'readonly');
       const store = transaction.objectStore(STORE_NAME);
@@ -230,22 +207,15 @@ async function getStoredRequests(queueName) {
 
 async function storeRequest(queueName, request) {
   try {
-    // Extract headers as an array of name-value pairs
-    const headers = [];
-    request.headers.forEach((value, name) => {
-      headers.push([name, value]);
-    });
-
     const requestData = {
       id: `${queueName}-${request.url}`,
       url: request.url,
       method: request.method,
-      headers,
       queueName,
       timestamp: Date.now(),
     };
 
-    const db = await openDB();
+    const db = await openDB(WEATHER_QUEUE_DB, DB_VERSION);
 
     return new Promise((resolve, reject) => {
       const transaction = db.transaction(STORE_NAME, 'readwrite');
@@ -263,15 +233,17 @@ async function storeRequest(queueName, request) {
 
 async function removeStoredRequest(queueName, url) {
   try {
-    const db = await openDB();
+    const db = await openDB(WEATHER_QUEUE_DB, DB_VERSION);
 
     return new Promise((resolve, reject) => {
-      const transaction = db.transaction(STORE_NAME, 'readwrite');
+      const transaction = db.transaction([STORE_NAME], 'readwrite');
       const store = transaction.objectStore(STORE_NAME);
       const deleteRequest = store.delete(`${queueName}-${url}`);
 
       deleteRequest.onsuccess = () => resolve(true);
       deleteRequest.onerror = () => reject(deleteRequest.error);
+
+      console.log('Stored request removed from queue:', `${queueName}-${url}`);
     });
   } catch (error) {
     console.error('Error removing stored request:', error);

@@ -17,3 +17,8 @@ export const DB_VERSION = 1;
 export const LOCATIONS_STORE = 'LOCATIONS_STORE';
 export const WEATHER_STORE = 'WEATHER_STORE';
 export const FORECAST_STORE = 'FORECAST_STORE';
+
+export const SYNC_KEY = {
+  WEATHER_SYNC_QUEUE: 'sync-weather-data',
+  FORECAST_SYNC_QUEUE: 'sync-forecast-data',
+};
