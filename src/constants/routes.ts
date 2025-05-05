@@ -12,3 +12,8 @@ export const API_ROUTES = {
   FORECAST_BY_COORDINATES: (lat: number, lon: number, units: string) =>
     `${OPENWEATHER_API_URL}/forecast?lat=${lat}&lon=${lon}&units=${units}&appid=${OPENWEATHER_API_KEY}`,
 };
+
+export const APP_ROUTES = {
+  HOME: '/',
+  MY_LOCATIONS: '/my-locations',
+};

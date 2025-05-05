@@ -1,6 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import classNames from 'classnames';
-import { useNavigate } from 'react-router';
+import { useNavigate, useLocation } from 'react-router';
 
 // Components
 import {
@@ -22,7 +22,7 @@ import { OpenWeatherMap, OpenWeatherMapLocation } from '@models';
 import { useWeather } from '@hooks';
 
 // Constants
-import { COLORS } from '@constants';
+import { APP_ROUTES, COLORS } from '@constants';
 
 // Stores
 import { getLocations, addLocation, deleteLocation } from '@stores';
@@ -34,6 +34,9 @@ const MyLocations = () => {
 
   const { asyncFetchWeather } = useWeather(null);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const canGoBack = location.key !== 'default';
 
   // Load saved locations from IndexedDB on component mount
   useEffect(() => {
@@ -116,10 +119,12 @@ const MyLocations = () => {
   }, []);
 
   const handleGoBack = useCallback(() => {
-    if (window.history.length > 1) {
+    if (canGoBack) {
       navigate(-1);
+    } else {
+      navigate(APP_ROUTES.HOME);
     }
-  }, [navigate]);
+  }, [canGoBack, navigate]);
 
   return (
     <MobileLayout className={classNames('gap-6', COLORS.GRADIENT)}>
