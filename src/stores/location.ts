@@ -14,4 +14,20 @@ const deleteLocation = async (locationId: number): Promise<void> => {
   return deleteItem(LOCATIONS_STORE, locationId);
 };
 
-export { addLocation, getLocations, deleteLocation };
+// Update the order of locations after dragging
+const updateLocationOrder = async (
+  locations: OpenWeatherMap[]
+): Promise<void> => {
+  try {
+    // Since IndexedDB doesn't naturally support ordering, we'll update each location
+    // The new order will be maintained when we retrieve them due to how we're re-adding them
+    for (const location of locations) {
+      await addLocation(location);
+    }
+  } catch (error) {
+    console.error('Error updating location order:', error);
+    throw error;
+  }
+};
+
+export { addLocation, getLocations, deleteLocation, updateLocationOrder };

@@ -14,3 +14,4 @@ export { default as Skeleton } from './Skeleton';
 export { default as SkeletonCard } from './Skeleton/SkeletonCard';
 export { default as SkeletonSearchResult } from './Skeleton/SkeletonSearchResult';
 export { default as SkeletonForecast } from './Skeleton/SkeletonForecast';
+export { default as TrashBin } from './TrashBin';

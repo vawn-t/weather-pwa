@@ -1,4 +1,4 @@
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { useNavigate, useLocation } from 'react-router';
 
@@ -10,6 +10,7 @@ import {
   SwipeNavigation,
   Text,
   SkeletonCard,
+  TrashBin,
 } from '@components';
 
 // Layouts
@@ -25,12 +26,21 @@ import { useWeather } from '@hooks';
 import { APP_ROUTES, COLORS } from '@constants';
 
 // Stores
-import { getLocations, addLocation, deleteLocation } from '@stores';
+import {
+  getLocations,
+  addLocation,
+  deleteLocation,
+  updateLocationOrder,
+} from '@stores';
 
 const MyLocations = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [locations, setLocations] = useState<OpenWeatherMap[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const draggedOverItemId = useRef<number | null>(null);
+  const locationsContainerRef = useRef<HTMLDivElement>(null);
 
   const { asyncFetchWeather } = useWeather(null);
   const navigate = useNavigate();
@@ -97,7 +107,7 @@ const MyLocations = () => {
         }
       } else {
         // TODO: Show a message to the user
-        console.log(`${selectedCity.name} already exists.`);
+        console.warn(`${selectedCity.name} already exists.`);
       }
 
       closeModal();
@@ -126,12 +136,94 @@ const MyLocations = () => {
     }
   }, [canGoBack, navigate]);
 
+  // Handle drag start
+  const handleDragStart = useCallback(() => {
+    setIsDragging(true);
+  }, []);
+
+  // Handle drag end
+  const handleDragEnd = useCallback(() => {
+    setIsDragging(false);
+    draggedOverItemId.current = null;
+  }, []);
+
+  // Handle touch move for mobile drag and drop
+  const handleTouchMove = useCallback(
+    (id: number, _index: number, clientX: number, clientY: number) => {
+      // Find the element under the touch point (excluding the dragged element)
+      const elementsAtPoint = document.elementsFromPoint(clientX, clientY);
+      const cardUnderTouch = elementsAtPoint.find((elem) => {
+        const cardId = elem.getAttribute('data-id');
+        return cardId && Number(cardId) !== id;
+      });
+
+      if (cardUnderTouch && cardUnderTouch.getAttribute('data-id')) {
+        const targetId = Number(cardUnderTouch.getAttribute('data-id'));
+
+        if (targetId !== draggedOverItemId.current) {
+          draggedOverItemId.current = targetId;
+
+          // Reorder locations
+          setLocations((prevLocations) => {
+            const draggedItemIndex = prevLocations.findIndex(
+              (loc) => loc.id === id
+            );
+            const draggedOverItemIndex = prevLocations.findIndex(
+              (loc) => loc.id === targetId
+            );
+
+            if (draggedItemIndex === -1 || draggedOverItemIndex === -1)
+              return prevLocations;
+
+            // Create a new array with the items reordered
+            const newLocations = [...prevLocations];
+            const [draggedItem] = newLocations.splice(draggedItemIndex, 1);
+            newLocations.splice(draggedOverItemIndex, 0, draggedItem);
+
+            return newLocations;
+          });
+        }
+      }
+    },
+    []
+  );
+
+  // Handle touch end for mobile drag and drop
+  const handleTouchEnd = useCallback(
+    (id: number, _index: number, clientX: number, clientY: number) => {
+      // Check if the card was dropped on the trash bin
+      const trashBin = document.querySelector('[data-testid="trash-bin"]');
+
+      if (trashBin) {
+        const trashRect = trashBin.getBoundingClientRect();
+        const isOverTrash =
+          clientX >= trashRect.left &&
+          clientX <= trashRect.right &&
+          clientY >= trashRect.top &&
+          clientY <= trashRect.bottom;
+
+        if (isOverTrash) {
+          // Delete the item
+          handleDeleteLocation(id);
+        } else {
+          // Update the order in the database
+          updateLocationOrder(locations).catch((err) => {
+            console.error('Failed to update location order after touch:', err);
+          });
+        }
+      }
+
+      draggedOverItemId.current = null;
+    },
+    [locations, handleDeleteLocation]
+  );
+
   return (
     <MobileLayout className={classNames('gap-6', COLORS.GRADIENT)}>
       <SwipeNavigation onGoBack={handleGoBack}>
         <MyLocationsHeader onOpenModal={openModal} onGoBack={handleGoBack} />
 
-        <div className="flex-grow overflow-y-auto">
+        <div className="flex-grow overflow-y-auto" ref={locationsContainerRef}>
           {isLoading ? (
             <div className="p-2">
               {[...Array(3)].map((_, index) => (
@@ -139,8 +231,9 @@ const MyLocations = () => {
               ))}
             </div>
           ) : locations.length > 0 ? (
-            locations.map((loc) => (
+            locations.map((loc, index) => (
               <LocationCard
+                draggable
                 id={loc.id}
                 key={loc.id}
                 city={loc.name}
@@ -149,7 +242,11 @@ const MyLocations = () => {
                 wind={loc.wind.speed}
                 icon={loc.weather[0].icon}
                 temperature={loc.main.temp}
-                onDelete={handleDeleteLocation}
+                index={index}
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
               />
             ))
           ) : (
@@ -165,6 +262,8 @@ const MyLocations = () => {
         onClose={closeModal}
         onAddLocation={handleAddLocation}
       />
+
+      <TrashBin visible={isDragging} onDrop={handleDeleteLocation} />
     </MobileLayout>
   );
 };
