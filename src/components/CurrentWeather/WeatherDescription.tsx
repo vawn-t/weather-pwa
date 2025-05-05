@@ -23,7 +23,10 @@ const WeatherDescription = ({
   return (
     <div className="relative flex flex-col items-center justify-center text-white text-center gap-4 max-w-36 mx-auto">
       {isLoading ? (
-        <Skeleton className="w-24 h-24 aspect-square rounded-full" />
+        <Skeleton
+          className="w-24 h-24 aspect-square rounded-full"
+          animation="shimmer"
+        />
       ) : (
         <img
           width={96}

@@ -3,7 +3,6 @@ import { useSwipeGesture } from '@hooks';
 
 interface SwipeNavigationProps {
   children: ReactNode;
-  canGoBack?: boolean;
   minSwipeDistance?: number;
   maxVerticalOffset?: number;
   onReload?: () => void;
@@ -16,24 +15,17 @@ interface SwipeNavigationProps {
  */
 const SwipeNavigation = ({
   children,
-  canGoBack = true,
   minSwipeDistance = 75,
   maxVerticalOffset = 100,
   onReload,
   onGoBack,
 }: SwipeNavigationProps) => {
-  const handleSwipeRight = () => {
-    if (canGoBack && window.history.length > 1) {
-      onGoBack?.();
-    }
-  };
-
   useSwipeGesture({
-    onSwipeRight: handleSwipeRight,
+    onSwipeRight: onGoBack,
     onSwipeDown: onReload,
     minSwipeDistance,
     maxVerticalOffset,
-    enabled: canGoBack,
+    enabled: true,
   });
 
   return <>{children}</>;

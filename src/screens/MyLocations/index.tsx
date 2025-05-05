@@ -1,5 +1,6 @@
 import { useCallback, useState, useEffect } from 'react';
 import classNames from 'classnames';
+import { useNavigate } from 'react-router';
 
 // Components
 import {
@@ -25,7 +26,6 @@ import { COLORS } from '@constants';
 
 // Stores
 import { getLocations, addLocation, deleteLocation } from '@stores';
-import { useNavigate } from 'react-router';
 
 const MyLocations = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -116,7 +116,9 @@ const MyLocations = () => {
   }, []);
 
   const handleGoBack = useCallback(() => {
-    navigate(-1);
+    if (window.history.length > 1) {
+      navigate(-1);
+    }
   }, [navigate]);
 
   return (
@@ -127,9 +129,9 @@ const MyLocations = () => {
         <div className="flex-grow overflow-y-auto">
           {isLoading ? (
             <div className="p-2">
-              <SkeletonCard />
-              <SkeletonCard />
-              <SkeletonCard />
+              {[...Array(3)].map((_, index) => (
+                <SkeletonCard key={index} />
+              ))}
             </div>
           ) : locations.length > 0 ? (
             locations.map((loc) => (

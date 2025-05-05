@@ -21,7 +21,7 @@
 html {
   min-height: calc(100% + env(safe-area-inset-top));
 
-  /* Disable pull-to-refresh */
+  /* Disable pull-to-refresh from default of browsers */
   overflow: hidden;
   overscroll-behavior: none;
 
@@ -36,35 +36,37 @@ img {
   -webkit-user-drag: none;
 }
 
-/* Custom animations */
-@keyframes slide-out {
-  0% {
-    transform: translateX(0);
-    opacity: 1;
+@theme {
+  --animate-fade-in: fade-in 0.3s ease-in forwards;
+  --shimmer: shimmer 2s infinite linear;
+
+  @keyframes fade-in {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
+    }
   }
-  100% {
-    transform: translateX(100%);
-    opacity: 0.7;
+
+  @keyframes shimmer {
+    0% {
+      background-image: linear-gradient(
+        to right,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+      );
+      background-position: -200px 0;
+    }
+    100% {
+      background-image: linear-gradient(
+        to right,
+        transparent,
+        rgba(255, 255, 255, 0.2),
+        transparent
+      );
+      background-position: 200px 0;
+    }
   }
 }
-
-@keyframes slide-in {
-  0% {
-    transform: translateX(-100%);
-    opacity: 0.7;
-  }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-.animate-slide-out {
-  animation: slide-out 0.3s ease-out forwards;
-}
-
-.animate-slide-in {
-  animation: slide-in 0.3s ease-out forwards;
-}
-
-/* The rest of your global CSS styles */

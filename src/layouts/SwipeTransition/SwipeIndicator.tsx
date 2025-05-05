@@ -2,17 +2,13 @@ import { SwipeIndicatorIcon } from '@components';
 import React from 'react';
 
 interface SwipeIndicatorProps {
-  progress: number;
   active: boolean;
 }
 
 /**
  * Visual indicator component that shows a back arrow during swipe
  */
-const SwipeIndicator: React.FC<SwipeIndicatorProps> = ({
-  progress,
-  active,
-}) => {
+const SwipeIndicator: React.FC<SwipeIndicatorProps> = ({ active }) => {
   if (!active) return null;
 
   const opacity = Math.min(progress * 2, 1);
