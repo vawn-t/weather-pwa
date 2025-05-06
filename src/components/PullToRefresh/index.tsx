@@ -1,3 +1,4 @@
+import classNames from 'classnames';
 import {
   useState,
   useRef,
@@ -12,6 +13,8 @@ interface PullToRefreshProps {
   onRefresh: () => Promise<void>;
   pullDownThreshold?: number;
   maxPullDownDistance?: number;
+  className?: string;
+  disabled?: boolean;
 }
 
 const PullToRefresh = ({
@@ -19,6 +22,8 @@ const PullToRefresh = ({
   onRefresh,
   pullDownThreshold = 80,
   maxPullDownDistance = 120,
+  className = '',
+  disabled = false,
 }: PullToRefreshProps) => {
   const [isPulling, setIsPulling] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -38,6 +43,8 @@ const PullToRefresh = ({
   }, [isRefreshing]);
 
   const handleTouchStart = (e: TouchEvent<HTMLDivElement>) => {
+    if (disabled) return;
+
     if (containerRef.current && containerRef.current.scrollTop === 0) {
       startYRef.current = e.touches[0].clientY;
       containerScrollTop.current = containerRef.current.scrollTop;
@@ -46,6 +53,7 @@ const PullToRefresh = ({
   };
 
   const handleTouchMove = (e: TouchEvent<HTMLDivElement>) => {
+    if (disabled) return;
     if (!isPulling || startYRef.current === null) return;
 
     const currentY = e.touches[0].clientY;
@@ -65,6 +73,7 @@ const PullToRefresh = ({
   };
 
   const handleTouchEnd = async () => {
+    if (disabled) return;
     if (!isPulling) return;
 
     if (pullDistance >= pullDownThreshold) {
@@ -81,7 +90,10 @@ const PullToRefresh = ({
 
   return (
     <div
-      className="relative h-full overflow-y-auto overflow-x-hidden overscroll-none"
+      className={classNames(
+        'relative h-full overflow-y-auto overflow-x-hidden overscroll-none',
+        className
+      )}
       style={{ WebkitOverflowScrolling: 'touch' }}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}

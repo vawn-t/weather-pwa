@@ -11,6 +11,7 @@ import {
   Text,
   SkeletonCard,
   TrashBin,
+  PullToRefresh,
 } from '@components';
 
 // Layouts
@@ -48,14 +49,12 @@ const MyLocations = () => {
 
   const canGoBack = location.key !== 'default';
 
-  // Load saved locations from IndexedDB on component mount
   useEffect(() => {
     const loadSavedLocations = async () => {
       try {
         setIsLoading(true);
         const savedLocations = await getLocations();
         if (savedLocations && savedLocations.length > 0) {
-          // Extract the weather data from each record
           const weatherData = savedLocations.map((loc) => loc.data);
           setLocations(weatherData);
         }
@@ -115,7 +114,6 @@ const MyLocations = () => {
     [locations, closeModal, asyncFetchWeather]
   );
 
-  // Handler for deleting a location
   const handleDeleteLocation = useCallback(async (dateAdded: number) => {
     try {
       await deleteLocation(dateAdded);
@@ -136,18 +134,15 @@ const MyLocations = () => {
     }
   }, [canGoBack, navigate]);
 
-  // Handle drag start
   const handleDragStart = useCallback(() => {
     setIsDragging(true);
   }, []);
 
-  // Handle drag end
   const handleDragEnd = useCallback(() => {
     setIsDragging(false);
     draggedOverItemId.current = null;
   }, []);
 
-  // Handle touch move for mobile drag and drop
   const handleTouchMove = useCallback(
     (dateAdded: number, _index: number, clientX: number, clientY: number) => {
       // Find the element under the touch point (excluding the dragged element)
@@ -174,7 +169,6 @@ const MyLocations = () => {
           if (draggedItemIndex === -1 || draggedOverItemIndex === -1)
             return prevLocations;
 
-          // Create a new array with the items reordered
           const newLocations = [...prevLocations];
           const [draggedItem] = newLocations.splice(draggedItemIndex, 1);
           newLocations.splice(draggedOverItemIndex, 0, draggedItem);
@@ -215,52 +209,92 @@ const MyLocations = () => {
     [locations, handleDeleteLocation]
   );
 
+  const handleRefresh = useCallback(async () => {
+    setIsLoading(true);
+
+    try {
+      // Process locations in parallel for better performance
+      const updatedLocationsPromises = locations.map((item) =>
+        asyncFetchWeather({
+          latitude: item.coord.lat,
+          longitude: item.coord.lon,
+          accuracy: 0,
+          timestamp: Date.now(),
+        }).then((res) => {
+          if (!res) {
+            throw new Error(`Failed to fetch weather data for ${item.name}`);
+          }
+          return { ...res, name: item.name }; // Ensure name is preserved
+        })
+      );
+
+      const updatedLocations = await Promise.all(updatedLocationsPromises);
+
+      setLocations(updatedLocations);
+      await updateLocationOrder(updatedLocations);
+    } catch (error) {
+      console.error('Failed to refresh locations:', error);
+      // Could add toast notification here
+    } finally {
+      setIsLoading(false);
+    }
+  }, [locations, asyncFetchWeather]);
+
   return (
-    <MobileLayout className={classNames('gap-6', COLORS.GRADIENT)}>
-      <SwipeNavigation onGoBack={handleGoBack}>
-        <MyLocationsHeader onOpenModal={openModal} onGoBack={handleGoBack} />
+    <MobileLayout className={classNames(COLORS.GRADIENT)}>
+      <PullToRefresh
+        className="flex flex-col gap-6"
+        onRefresh={handleRefresh}
+        disabled={isDragging}
+      >
+        <SwipeNavigation onGoBack={handleGoBack}>
+          <MyLocationsHeader onOpenModal={openModal} onGoBack={handleGoBack} />
 
-        <div className="flex-grow overflow-y-auto" ref={locationsContainerRef}>
-          {isLoading ? (
-            <div className="p-2">
-              {[...Array(3)].map((_, index) => (
-                <SkeletonCard key={index} />
-              ))}
-            </div>
-          ) : locations.length > 0 ? (
-            locations.map((loc, index) => (
-              <LocationCard
-                draggable
-                dateAdded={loc.dateAdded}
-                key={loc.id}
-                city={loc.name}
-                condition={loc.weather[0].main}
-                humidity={loc.main.humidity}
-                wind={loc.wind.speed}
-                icon={loc.weather[0].icon}
-                temperature={loc.main.temp}
-                index={index}
-                onDragStart={handleDragStart}
-                onDragEnd={handleDragEnd}
-                onTouchMove={handleTouchMove}
-                onTouchEnd={handleTouchEnd}
-              />
-            ))
-          ) : (
-            <Text className="text-white text-center py-8">
-              No saved locations. Add a location to get started.
-            </Text>
-          )}
-        </div>
-      </SwipeNavigation>
+          <div
+            className="flex-grow overflow-y-auto"
+            ref={locationsContainerRef}
+          >
+            {isLoading ? (
+              <div className="p-2 space-y-4">
+                {[...Array(Math.max(locations.length, 1))].map((_, index) => (
+                  <SkeletonCard key={index} />
+                ))}
+              </div>
+            ) : locations.length > 0 ? (
+              locations.map((loc, index) => (
+                <LocationCard
+                  draggable
+                  dateAdded={loc.dateAdded}
+                  key={loc.id || `loc-${index}`}
+                  city={loc.name}
+                  condition={loc.weather[0]?.main || 'Unknown'}
+                  humidity={loc.main?.humidity || 0}
+                  wind={loc.wind?.speed || 0}
+                  icon={loc.weather[0]?.icon || '01d'}
+                  temperature={loc.main?.temp || 0}
+                  index={index}
+                  onDragStart={handleDragStart}
+                  onDragEnd={handleDragEnd}
+                  onTouchMove={handleTouchMove}
+                  onTouchEnd={handleTouchEnd}
+                />
+              ))
+            ) : (
+              <Text className="text-white text-center py-8">
+                No saved locations. Add a location to get started.
+              </Text>
+            )}
+          </div>
+        </SwipeNavigation>
 
-      <SearchModal
-        isOpen={isModalOpen}
-        onClose={closeModal}
-        onAddLocation={handleAddLocation}
-      />
+        <SearchModal
+          isOpen={isModalOpen}
+          onClose={closeModal}
+          onAddLocation={handleAddLocation}
+        />
 
-      <TrashBin visible={isDragging} onDrop={handleDeleteLocation} />
+        <TrashBin visible={isDragging} onDrop={handleDeleteLocation} />
+      </PullToRefresh>
     </MobileLayout>
   );
 };
