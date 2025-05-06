@@ -116,12 +116,12 @@ const MyLocations = () => {
   );
 
   // Handler for deleting a location
-  const handleDeleteLocation = useCallback(async (id: number) => {
+  const handleDeleteLocation = useCallback(async (dateAdded: number) => {
     try {
-      await deleteLocation(id);
+      await deleteLocation(dateAdded);
 
       setLocations((prevLocations) =>
-        prevLocations.filter((location) => location.id !== id)
+        prevLocations.filter((location) => location.dateAdded !== dateAdded)
       );
     } catch (error) {
       console.error('Failed to delete location:', error);
@@ -149,50 +149,47 @@ const MyLocations = () => {
 
   // Handle touch move for mobile drag and drop
   const handleTouchMove = useCallback(
-    (id: number, _index: number, clientX: number, clientY: number) => {
+    (dateAdded: number, _index: number, clientX: number, clientY: number) => {
       // Find the element under the touch point (excluding the dragged element)
       const elementsAtPoint = document.elementsFromPoint(clientX, clientY);
       const cardUnderTouch = elementsAtPoint.find((elem) => {
         const cardId = elem.getAttribute('data-id');
-        return cardId && Number(cardId) !== id;
+        return cardId && Number(cardId) !== dateAdded;
       });
 
       if (cardUnderTouch && cardUnderTouch.getAttribute('data-id')) {
         const targetId = Number(cardUnderTouch.getAttribute('data-id'));
 
-        if (targetId !== draggedOverItemId.current) {
-          draggedOverItemId.current = targetId;
+        draggedOverItemId.current = targetId;
 
-          // Reorder locations
-          setLocations((prevLocations) => {
-            const draggedItemIndex = prevLocations.findIndex(
-              (loc) => loc.id === id
-            );
-            const draggedOverItemIndex = prevLocations.findIndex(
-              (loc) => loc.id === targetId
-            );
+        // Reorder locations
+        setLocations((prevLocations) => {
+          const draggedItemIndex = prevLocations.findIndex(
+            (loc) => loc.dateAdded === dateAdded
+          );
+          const draggedOverItemIndex = prevLocations.findIndex(
+            (loc) => loc.dateAdded === targetId
+          );
 
-            if (draggedItemIndex === -1 || draggedOverItemIndex === -1)
-              return prevLocations;
+          if (draggedItemIndex === -1 || draggedOverItemIndex === -1)
+            return prevLocations;
 
-            // Create a new array with the items reordered
-            const newLocations = [...prevLocations];
-            const [draggedItem] = newLocations.splice(draggedItemIndex, 1);
-            newLocations.splice(draggedOverItemIndex, 0, draggedItem);
+          // Create a new array with the items reordered
+          const newLocations = [...prevLocations];
+          const [draggedItem] = newLocations.splice(draggedItemIndex, 1);
+          newLocations.splice(draggedOverItemIndex, 0, draggedItem);
 
-            return newLocations;
-          });
-        }
+          return newLocations;
+        });
       }
     },
     []
   );
 
-  // Handle touch end for mobile drag and drop
   const handleTouchEnd = useCallback(
-    (id: number, _index: number, clientX: number, clientY: number) => {
+    (dateAdded: number, _index: number, clientX: number, clientY: number) => {
       // Check if the card was dropped on the trash bin
-      const trashBin = document.querySelector('[data-testid="trash-bin"]');
+      const trashBin = document.querySelector('[data-id="trash-bin"]');
 
       if (trashBin) {
         const trashRect = trashBin.getBoundingClientRect();
@@ -203,10 +200,10 @@ const MyLocations = () => {
           clientY <= trashRect.bottom;
 
         if (isOverTrash) {
-          // Delete the item
-          handleDeleteLocation(id);
+          handleDeleteLocation(dateAdded).then(() => {
+            console.error('Failed to delete location:');
+          });
         } else {
-          // Update the order in the database
           updateLocationOrder(locations).catch((err) => {
             console.error('Failed to update location order after touch:', err);
           });
@@ -234,7 +231,7 @@ const MyLocations = () => {
             locations.map((loc, index) => (
               <LocationCard
                 draggable
-                id={loc.id}
+                dateAdded={loc.dateAdded}
                 key={loc.id}
                 city={loc.name}
                 condition={loc.weather[0].main}

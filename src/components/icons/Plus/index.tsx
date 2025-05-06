@@ -1,4 +1,4 @@
-import PlusIcon from '@assets/weather-icons/plus.png';
+import PlusIcon from '@assets/icons/plus.png';
 
 const Plus = () => <img src={PlusIcon} alt="Plus" />;
 

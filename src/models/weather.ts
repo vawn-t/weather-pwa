@@ -85,6 +85,7 @@ export interface OpenWeatherMap {
   id: number;
   name: string;
   cod: number;
+  dateAdded: number;
 }
 
 export type OpenWeatherMapForecast = {

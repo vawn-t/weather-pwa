@@ -14,7 +14,7 @@ interface LocationCardProps {
   wind: number;
   icon: string;
   temperature: number;
-  id: number;
+  dateAdded: number;
   draggable?: boolean;
   index: number;
   onTouchMove?: (
@@ -40,7 +40,7 @@ const LocationCard = ({
   wind,
   icon,
   temperature,
-  id,
+  dateAdded,
   draggable = true,
   index,
   onTouchMove,
@@ -51,7 +51,6 @@ const LocationCard = ({
   const weatherIcon = useWeatherIcon(icon);
   const [isDragging, setIsDragging] = useState(false);
   const cardRef = useRef<HTMLElement>(null);
-  const [touchActive, setTouchActive] = useState(false);
   const touchStartPosition = useRef({ x: 0, y: 0 });
   const originalPosition = useRef({ top: 0, left: 0 });
 
@@ -85,7 +84,6 @@ const LocationCard = ({
       // Short delay to distinguish between tap and drag
       setTimeout(() => {
         if (cardRef.current) {
-          setTouchActive(true);
           cardRef.current.style.zIndex = '50';
           cardRef.current.style.position = 'relative';
         }
@@ -96,7 +94,7 @@ const LocationCard = ({
 
   const handleTouchMove = useCallback(
     (e: React.TouchEvent<HTMLElement>) => {
-      if (!touchActive || !draggable) return;
+      if (!draggable) return;
 
       // Prevent scrolling while dragging
       e.preventDefault();
@@ -109,18 +107,14 @@ const LocationCard = ({
         cardRef.current.style.transform = `translate(${deltaX}px, ${deltaY}px)`;
         setIsDragging(true);
 
-        // Call the onTouchMove callback with current position
-        onTouchMove?.(id, index, touch.clientX, touch.clientY);
+        onTouchMove?.(dateAdded, index, touch.clientX, touch.clientY);
       }
     },
-    [touchActive, draggable, id, index, onTouchMove]
+    [draggable, dateAdded, index, onTouchMove]
   );
 
   const handleTouchEnd = useCallback(
     (e: React.TouchEvent<HTMLElement>) => {
-      if (!touchActive) return;
-
-      setTouchActive(false);
       setIsDragging(false);
 
       if (cardRef.current) {
@@ -131,12 +125,12 @@ const LocationCard = ({
 
         // Determine final position for drop handling
         const touch = e.changedTouches[0];
-        onTouchEnd?.(id, index, touch.clientX, touch.clientY);
+        onTouchEnd?.(dateAdded, index, touch.clientX, touch.clientY);
       }
 
       onDragEnd();
     },
-    [touchActive, onDragEnd, onTouchEnd, id, index]
+    [onDragEnd, onTouchEnd, dateAdded, index]
   );
 
   return (
@@ -144,11 +138,10 @@ const LocationCard = ({
       ref={cardRef}
       className={classNames(
         `bg-[#AAA5A5]/30 backdrop-blur-sm rounded-xl p-4 flex justify-between items-center mb-6 mx-4 relative`,
-        { 'opacity-50': isDragging || touchActive },
-        { 'elevation-10': touchActive }
+        { 'opacity-50': isDragging }
       )}
       draggable={draggable}
-      data-id={id}
+      data-id={dateAdded}
       data-index={index}
       onTouchStart={handleTouchStart}
       onTouchMove={handleTouchMove}

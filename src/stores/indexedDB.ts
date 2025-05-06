@@ -115,4 +115,15 @@ const deleteItem = async (storeName: string, itemId: number): Promise<void> => {
   });
 };
 
-export { addItem, getItems, deleteItem };
+const clearStore = async (storeName: string): Promise<void> => {
+  const database = await initDB();
+  return new Promise((resolve, reject) => {
+    const transaction = database.transaction([storeName], 'readwrite');
+    const store = transaction.objectStore(storeName);
+    const request = store.clear();
+    request.onsuccess = () => resolve();
+    request.onerror = (event) => reject(event);
+  });
+};
+
+export { addItem, getItems, deleteItem, clearStore };

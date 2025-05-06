@@ -1,4 +1,4 @@
-import SearchIcon from '@assets/weather-icons/search.png';
+import SearchIcon from '@assets/icons/search.png';
 
 const Search = () => (
   <img src={SearchIcon} alt="Search" width={32} height={32} />
