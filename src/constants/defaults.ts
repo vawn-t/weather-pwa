@@ -1,6 +1,7 @@
 import { OpenWeatherMap } from '@models';
 
 export const WEATHER_DATA_DEFAULT: OpenWeatherMap = {
+  dateAdded: 0,
   coord: {
     lon: 0,
     lat: 0,
