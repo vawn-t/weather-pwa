@@ -30,7 +30,43 @@ This document outlines the estimation plan for implementation of Progressive Web
 - The user can search location
   - Allow the user to search specific location
 - Let user the future attention weather forecast by push notification
+
   - Leverage Push Notification API to create a push notification to user know the future weather forecast
+
+## FEATURES
+
+### Core PWA Features
+
+- **Installable App**: Users can install the app to their home screen with full app-like experience
+- **Offline Support**: Application works without internet connection using cached data
+- **Background Sync**: Weather data synchronizes when connection is restored
+- **Push Notifications**: Weather forecast notifications for saved locations
+
+### UI/UX Features
+
+- **Pull-to-Refresh**: Native-like pull down gesture to refresh weather data
+- **Swipe Navigation**: Intuitive swipe gestures to navigate between screens
+- **Swipe-to-Delete**: Remove saved locations with swipe gestures
+- **Dynamic Backgrounds**: Location-based background images from Unsplash
+- **Skeleton Loading**: Modern loading states while fetching data
+- **Animated Transitions**: Smooth transitions between screens and components
+
+### Weather Features
+
+- **Current Weather**: Real-time weather conditions from OpenWeather API
+- **Location Detection**: Automatic weather for user's current location
+- **Weather Forecast**: Multi-day forecast with temperature and conditions
+- **Weather Details**: Wind speed, humidity, and feels-like temperature
+- **Location Management**: Save multiple locations for quick access
+- **Location Search**: Search for any city worldwide
+
+### Technical Features
+
+- **IndexedDB Storage**: Persistent data storage for offline access
+- **Service Worker**: Background processing and caching
+- **Geolocation API**: Access device location with permission handling
+- **Web App Manifest**: Proper app configuration for installation
+- **Workbox Integration**: Optimized service worker management
 
 ## DESIGN
 
