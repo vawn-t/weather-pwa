@@ -276,6 +276,7 @@ const MyLocations = () => {
                   onDragEnd={handleDragEnd}
                   onTouchMove={handleTouchMove}
                   onTouchEnd={handleTouchEnd}
+                  onDelete={handleDeleteLocation}
                 />
               ))
             ) : (

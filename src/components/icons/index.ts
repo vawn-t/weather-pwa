@@ -8,3 +8,4 @@ export { default as WindIcon } from './Wind';
 export { default as PlusIcon } from './Plus';
 export { default as SearchIcon } from './Search';
 export { default as SwipeIndicatorIcon } from './SwipeIndicator';
+export { default as TrashBinIcon } from './TrashBin';

@@ -5,7 +5,8 @@ import classNames from 'classnames';
 import { useWeatherIcon } from '@hooks';
 
 // Components
-import { Text } from '../commons';
+import { Button, Text } from '../commons';
+import { DeleteIcon } from '../icons';
 
 interface LocationCardProps {
   city: string;
@@ -31,6 +32,7 @@ interface LocationCardProps {
   ) => void;
   onDragStart: () => void;
   onDragEnd: () => void;
+  onDelete: (id: number) => void;
 }
 
 const LocationCard = ({
@@ -47,6 +49,7 @@ const LocationCard = ({
   onTouchEnd,
   onDragStart,
   onDragEnd,
+  onDelete,
 }: LocationCardProps) => {
   const weatherIcon = useWeatherIcon(icon);
   const [isDragging, setIsDragging] = useState(false);
@@ -133,11 +136,15 @@ const LocationCard = ({
     [onDragEnd, onTouchEnd, dateAdded, index]
   );
 
+  const handleDelete = useCallback(() => {
+    onDelete(dateAdded);
+  }, [onDelete, dateAdded]);
+
   return (
     <section
       ref={cardRef}
       className={classNames(
-        `bg-[#AAA5A5]/30 backdrop-blur-sm rounded-xl p-4 flex justify-between items-center mb-6 mx-4 relative`,
+        `bg-[#AAA5A5]/30 backdrop-blur-sm rounded-xl py-6 px-8 flex justify-between items-center mb-6 mx-4 relative`,
         { 'opacity-50': isDragging }
       )}
       draggable={draggable}
@@ -147,6 +154,13 @@ const LocationCard = ({
       onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
     >
+      <Button
+        className="absolute top-2 right-2 hover:bg-amber-800 rounded-full p-1 transition-all duration-200 ease-in-out"
+        onClick={handleDelete}
+      >
+        <DeleteIcon />
+      </Button>
+
       {/* Left Side Info */}
       <div className="flex flex-col text-gray-200">
         <Text className="text-2xl font-semibold mb-1">{city}</Text>

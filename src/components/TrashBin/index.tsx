@@ -1,5 +1,5 @@
 import { FC, useState, useEffect } from 'react';
-import { DeleteIcon } from '../icons';
+import { TrashBinIcon } from '../icons';
 
 interface TrashBinProps {
   visible: boolean;
@@ -67,7 +67,7 @@ const TrashBin: FC<TrashBinProps> = ({ visible, onDrop }) => {
       <div
         className={`text-white transition-all ${isHovering ? 'scale-125' : 'scale-100'}`}
       >
-        <DeleteIcon />
+        <TrashBinIcon />
       </div>
     </div>
   );
