@@ -92,20 +92,21 @@ const MyLocations = () => {
           });
 
           if (location) {
+            const dateAdded = Date.now();
             const newLocation: OpenWeatherMap = {
               ...location,
               name: selectedCity.name,
+              dateAdded,
             };
 
             setLocations((prevLocations) => [...prevLocations, newLocation]);
 
-            await addLocation(newLocation);
+            await addLocation(newLocation, dateAdded);
           }
         } catch (error) {
           console.error('Failed to fetch weather data:', error);
         }
       } else {
-        // TODO: Show a message to the user
         console.warn(`${selectedCity.name} already exists.`);
       }
 
@@ -213,7 +214,6 @@ const MyLocations = () => {
     setIsLoading(true);
 
     try {
-      // Process locations in parallel for better performance
       const updatedLocationsPromises = locations.map((item) =>
         asyncFetchWeather({
           latitude: item.coord.lat,
@@ -234,7 +234,6 @@ const MyLocations = () => {
       await updateLocationOrder(updatedLocations);
     } catch (error) {
       console.error('Failed to refresh locations:', error);
-      // Could add toast notification here
     } finally {
       setIsLoading(false);
     }
