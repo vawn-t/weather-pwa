@@ -1,4 +1,5 @@
 import { useEffect, useCallback } from 'react';
+import { toast } from 'react-toastify';
 
 // Layouts
 import { MobileLayout } from '@layouts';
@@ -80,6 +81,8 @@ const Home = () => {
     if (locationName) {
       await refreshBackground(locationName);
     }
+
+    toast.success('Weather data refreshed successfully!');
   }, [
     location,
     fetchWeatherForCurrentLocation,

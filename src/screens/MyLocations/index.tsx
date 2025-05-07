@@ -1,6 +1,7 @@
 import { useCallback, useState, useEffect, useRef } from 'react';
 import classNames from 'classnames';
 import { useNavigate, useLocation } from 'react-router';
+import { toast } from 'react-toastify';
 
 // Components
 import {
@@ -103,10 +104,14 @@ const MyLocations = () => {
 
             await addLocation(newLocation, dateAdded);
           }
+
+          toast.success('Location added successfully');
         } catch (error) {
+          toast.error('Failed to fetch weather data.');
           console.error('Failed to fetch weather data:', error);
         }
       } else {
+        toast.warn('Location already exists.');
         console.warn(`${selectedCity.name} already exists.`);
       }
 
@@ -122,7 +127,10 @@ const MyLocations = () => {
       setLocations((prevLocations) =>
         prevLocations.filter((location) => location.dateAdded !== dateAdded)
       );
+
+      toast.success('Location deleted successfully');
     } catch (error) {
+      toast.error('Failed to delete location');
       console.error('Failed to delete location:', error);
     }
   }, []);
@@ -196,10 +204,12 @@ const MyLocations = () => {
 
         if (isOverTrash) {
           handleDeleteLocation(dateAdded).then(() => {
+            toast.success('Location deleted successfully');
             console.error('Failed to delete location:');
           });
         } else {
           updateLocationOrder(locations).catch((err) => {
+            toast.error('Failed to update location order');
             console.error('Failed to update location order after touch:', err);
           });
         }
@@ -232,7 +242,10 @@ const MyLocations = () => {
 
       setLocations(updatedLocations);
       await updateLocationOrder(updatedLocations);
+
+      toast.success('Locations refreshed successfully!');
     } catch (error) {
+      toast.error('Failed to refresh locations.');
       console.error('Failed to refresh locations:', error);
     } finally {
       setIsLoading(false);
