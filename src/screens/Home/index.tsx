@@ -18,6 +18,7 @@ import { useBackgroundImage, useLocation, useWeather } from '@hooks';
 
 // Utils
 import { requestNotificationPermission, showWeatherNotification } from '@utils';
+import { MESSAGES, TOAST_IDS } from '@constants';
 
 const Home = () => {
   const { location, permissionStatus } = useLocation();
@@ -39,7 +40,6 @@ const Home = () => {
   // Handle notification setup when weather data is available
   useEffect(() => {
     const setupNotifications = async () => {
-      // Only proceed if we have forecast data
       if (!forecast || forecast.length === 0) return;
 
       const notificationPermission = await requestNotificationPermission();
@@ -70,19 +70,18 @@ const Home = () => {
   const handleRefresh = useCallback(async () => {
     if (!location) return;
 
-    // A small delay to improve UX
     await new Promise((resolve) => setTimeout(resolve, 500));
 
-    // Refresh weather data
     await fetchWeatherForCurrentLocation();
     await fetchForecast();
 
-    // Also refresh the background image
     if (locationName) {
       await refreshBackground(locationName);
     }
 
-    toast.success('Weather data refreshed successfully!');
+    toast.success(MESSAGES.SUCCESS.REFRESH_WEATHER, {
+      toastId: TOAST_IDS.HOME_REFRESH_WEATHER,
+    });
   }, [
     location,
     fetchWeatherForCurrentLocation,

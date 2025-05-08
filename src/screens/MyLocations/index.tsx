@@ -25,7 +25,7 @@ import { OpenWeatherMap, OpenWeatherMapLocation } from '@models';
 import { useWeather } from '@hooks';
 
 // Constants
-import { APP_ROUTES, COLORS } from '@constants';
+import { APP_ROUTES, COLORS, MESSAGES, TOAST_IDS } from '@constants';
 
 // Stores
 import {
@@ -60,7 +60,10 @@ const MyLocations = () => {
           setLocations(weatherData);
         }
       } catch (error) {
-        console.error('Failed to load saved locations:', error);
+        toast.error(MESSAGES.ERROR.COMMON, {
+          toastId: TOAST_IDS.COMMON,
+        });
+        console.error(MESSAGES.ERROR.LOG(error));
       } finally {
         setIsLoading(false);
       }
@@ -105,14 +108,19 @@ const MyLocations = () => {
             await addLocation(newLocation, dateAdded);
           }
 
-          toast.success('Location added successfully');
+          toast.success(MESSAGES.SUCCESS.LOCATION_ADD, {
+            toastId: TOAST_IDS.LOCATION_ADD_SUCCESS,
+          });
         } catch (error) {
-          toast.error('Failed to fetch weather data.');
+          toast.error(MESSAGES.ERROR.LOCATION_ADD, {
+            toastId: TOAST_IDS.LOCATION_ADD_FAILED,
+          });
           console.error('Failed to fetch weather data:', error);
         }
       } else {
-        toast.warn('Location already exists.');
-        console.warn(`${selectedCity.name} already exists.`);
+        toast.warn(MESSAGES.WARNING.LOCATION_EXISTS, {
+          toastId: TOAST_IDS.LOCATION_EXISTS,
+        });
       }
 
       closeModal();
@@ -128,10 +136,14 @@ const MyLocations = () => {
         prevLocations.filter((location) => location.dateAdded !== dateAdded)
       );
 
-      toast.success('Location deleted successfully');
+      toast.success(MESSAGES.SUCCESS.LOCATION_DELETE, {
+        toastId: TOAST_IDS.LOCATION_DELETE_SUCCESS,
+      });
     } catch (error) {
-      toast.error('Failed to delete location');
-      console.error('Failed to delete location:', error);
+      toast.error(MESSAGES.ERROR.LOCATION_DELETE, {
+        toastId: TOAST_IDS.LOCATION_DELETE_FAILED,
+      });
+      console.error(MESSAGES.ERROR.LOG(error));
     }
   }, []);
 
@@ -203,14 +215,13 @@ const MyLocations = () => {
           clientY <= trashRect.bottom;
 
         if (isOverTrash) {
-          handleDeleteLocation(dateAdded).then(() => {
-            toast.success('Location deleted successfully');
-            console.error('Failed to delete location:');
-          });
+          handleDeleteLocation(dateAdded);
         } else {
           updateLocationOrder(locations).catch((err) => {
-            toast.error('Failed to update location order');
-            console.error('Failed to update location order after touch:', err);
+            toast.error(MESSAGES.ERROR.LOCATION_UPDATE, {
+              toastId: TOAST_IDS.LOCATION_UPDATE_FAILED,
+            });
+            console.error(MESSAGES.ERROR.LOG(err));
           });
         }
       }
@@ -243,10 +254,14 @@ const MyLocations = () => {
       setLocations(updatedLocations);
       await updateLocationOrder(updatedLocations);
 
-      toast.success('Locations refreshed successfully!');
+      toast.success(MESSAGES.SUCCESS.REFRESH_WEATHER, {
+        toastId: TOAST_IDS.MY_LOCATIONS_REFRESH_WEATHER,
+      });
     } catch (error) {
-      toast.error('Failed to refresh locations.');
-      console.error('Failed to refresh locations:', error);
+      toast.error(MESSAGES.ERROR.COMMON, {
+        toastId: TOAST_IDS.COMMON,
+      });
+      console.error(MESSAGES.ERROR.LOG(error));
     } finally {
       setIsLoading(false);
     }

@@ -144,7 +144,7 @@ const LocationCard = ({
     <section
       ref={cardRef}
       className={classNames(
-        `bg-[#AAA5A5]/30 backdrop-blur-sm rounded-xl py-6 px-8 flex justify-between items-center mb-6 mx-4 relative`,
+        `bg-[#AAA5A5]/30 backdrop-blur-sm rounded-xl p-6 sm:px-8 flex justify-between items-center mb-6 mx-4 relative`,
         { 'opacity-50': isDragging }
       )}
       draggable={draggable}
@@ -155,7 +155,7 @@ const LocationCard = ({
       onTouchEnd={handleTouchEnd}
     >
       <Button
-        className="absolute top-2 right-2 hover:bg-amber-800 rounded-full p-1 transition-all duration-200 ease-in-out"
+        className="hidden sm:block absolute top-2 right-2 hover:bg-amber-800 rounded-full p-1 transition-all duration-200 ease-in-out"
         onClick={handleDelete}
       >
         <DeleteIcon />
